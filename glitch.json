@@ -1,0 +1,13 @@
+{
+  "start": "java -jar spondon-backend/target/*.jar",
+  "install": "echo 'compiling...' && cd spondon-backend && mvn package",
+  "watch": {
+    "throttle": 500,
+    "install": {
+      "include": [
+        "pom\\.xml$",
+        "\\.java$"
+      ]
+    }
+  }
+}
