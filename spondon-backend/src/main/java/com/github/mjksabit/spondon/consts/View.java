@@ -1,4 +1,4 @@
-package com.github.mjksabit.spondon.config;
+package com.github.mjksabit.spondon.consts;
 
 public class View {
     public static class Public { }

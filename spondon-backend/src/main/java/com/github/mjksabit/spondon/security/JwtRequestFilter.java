@@ -2,6 +2,8 @@ package com.github.mjksabit.spondon.security;
 
 import com.github.mjksabit.spondon.util.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,8 @@ import java.io.IOException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
+
+    protected final Log logger = LogFactory.getLog(this.getClass());
 
     @Autowired
     UserDetailsService userDetailsService;

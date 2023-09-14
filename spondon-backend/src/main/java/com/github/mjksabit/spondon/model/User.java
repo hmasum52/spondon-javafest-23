@@ -2,7 +2,13 @@ package com.github.mjksabit.spondon.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.github.mjksabit.spondon.config.View;
+import com.github.mjksabit.spondon.consts.View;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.proxy.HibernateProxyHelper;
 
 import javax.persistence.*;
@@ -10,6 +16,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Table(name = "user_table")
 public class User implements Serializable {
     @JsonIgnore
