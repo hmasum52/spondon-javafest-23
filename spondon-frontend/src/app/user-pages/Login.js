@@ -43,23 +43,22 @@ export function Login() {
                 </div>
                 <div className="my-2 d-flex justify-content-between align-items-center">
                   <div className="form-check">
-                    <label className="form-check-label text-muted">
+                    {/* <label className="form-check-label text-muted">
                       <input type="checkbox" className="form-check-input" />
                       <i className="input-helper"></i>
                       Keep me signed in
-                    </label>
+                    </label> */}
                   </div>
-                  <a
-                    href="!#"
-                    onClick={(event) => event.preventDefault()}
+                  <Link
+                    to="/auth/forget-password"
                     className="auth-link text-black"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
                 <div className="text-center mt-4 font-weight-light">
                   Don't have an account?{" "}
-                  <Link to="/user-pages/register" className="text-primary">
+                  <Link to="/auth/register" className="text-primary">
                     Create
                   </Link>
                 </div>
