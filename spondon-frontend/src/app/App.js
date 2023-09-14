@@ -1,92 +1,112 @@
-import React, { Component, useEffect, useState } from 'react';
-import { withRouter } from 'react-router-dom';
-import './App.scss';
-import AppRoutes from './AppRoutes';
-import Navbar from './shared/Navbar';
-import Sidebar from './shared/Sidebar';
-import SettingsPanel from './shared/SettingsPanel';
-import Footer from './shared/Footer';
+import axios from "axios";
+import { useEffect, useState, createContext } from "react";
+import { withRouter } from "react-router-dom";
+import "./App.scss";
+import AppRoutes from "./AppRoutes";
+import Navbar from "./shared/Navbar";
+import Sidebar from "./shared/Sidebar";
+import SettingsPanel from "./shared/SettingsPanel";
+import Footer from "./shared/Footer";
+import "./App.css";
+import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
+import { FORBIDDEN, UNAUTHORIZED } from "./api";
+import { Toaster, toast } from "react-hot-toast";
 
-import logo from './logo.svg';
-import './App.css';
-import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
+export const UserContext = createContext({
+  user: undefined,
+  setUser: (u) => {},
+});
+export const UserProvider = UserContext.Provider;
 
-function App(props) {
+const parseJwt = (token) => {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+};
+
+function App() {
   const location = useLocation();
   const [isFullPageLayout, setIsFullPageLayout] = useState(false);
 
-  useEffect(() => {
-    onRouteChanged(location);
-  }, []);
+  const [user, setUser] = useState(parseJwt(localStorage.getItem("token")));
+
+  console.log("user: ", user);
+
+  axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      console.log(error);
+      const status = error?.response?.status;
+
+      if (status === UNAUTHORIZED || status === FORBIDDEN) {
+        localStorage.removeItem("token");
+        setUser(null);
+        toast.error("Please login again.");
+      } else {
+        const message = error?.response?.message || "Something went wrong...";
+        toast.error(message);
+      }
+      return new Promise(() => {});
+    }
+  );
 
   useEffect(() => {
     onRouteChanged(location);
   }, [location]);
 
   function onRouteChanged(location) {
-    console.log("ROUTE CHANGED");
     window.scrollTo(0, 0);
-    const fullPageLayoutRoutes = [
-      '/user-pages/login-1',
-      '/user-pages/register-1',
-      '/user-pages/lockscreen',
-      '/error-pages/error-404',
-      '/error-pages/error-500',
-      '/general-pages/landing-page',
-    ];
-    const isFullPageLayout = fullPageLayoutRoutes.includes(location.pathname);
-    console.log("isFullPageLayout: ", isFullPageLayout);
+    const fullPageLayoutRoutes = ["/auth/", "/form/"];
+    const isFullPageLayout = fullPageLayoutRoutes.some((l) =>
+      location.pathname.startsWith(l)
+    );
+    console.log("isFullPageLayout: ", isFullPageLayout, location.pathname);
     setIsFullPageLayout(isFullPageLayout);
 
     if (isFullPageLayout) {
-      document.querySelector('.page-body-wrapper').classList.add('full-page-wrapper');
+      document
+        .querySelector(".page-body-wrapper")
+        .classList.add("full-page-wrapper");
     } else {
-      document.querySelector('.page-body-wrapper').classList.remove('full-page-wrapper');
+      document
+        .querySelector(".page-body-wrapper")
+        .classList.remove("full-page-wrapper");
     }
-
   }
 
-  let navbarComponent = !isFullPageLayout ? <Navbar /> : '';
-  let sidebarComponent = !isFullPageLayout ? <Sidebar /> : '';
-  let SettingsPanelComponent = !isFullPageLayout ? <SettingsPanel /> : '';
-  let footerComponent = !isFullPageLayout ? <Footer /> : '';
+  let navbarComponent = !isFullPageLayout ? <Navbar /> : "";
+  let sidebarComponent = !isFullPageLayout ? <Sidebar /> : "";
+  let SettingsPanelComponent = !isFullPageLayout ? <SettingsPanel /> : "";
+  let footerComponent = !isFullPageLayout ? <Footer /> : "";
 
   return (
-    <div className="container-scroller">
-      {navbarComponent}
-      <div className={"container-fluid page-body-wrapper"}>
-        {sidebarComponent}
-        <div className="main-panel">
-          <div className="content-wrapper">
-            <AppRoutes />
-            {SettingsPanelComponent}
+    <UserProvider value={{ user: user, setUser }}>
+      <div className="container-scroller">
+        {navbarComponent}
+        <div className={"container-fluid page-body-wrapper"}>
+          {sidebarComponent}
+          <div className="main-panel">
+            <div className="content-wrapper">
+              <AppRoutes />
+              {SettingsPanelComponent}
+            </div>
+            {footerComponent}
           </div>
-          {footerComponent}
         </div>
       </div>
-    </div>
+    </UserProvider>
   );
 }
 
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-export default withRouter(App);
+export default App;

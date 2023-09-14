@@ -20,7 +20,7 @@ public class JwtTokenUtil implements Serializable {
     public static final long JWT_TOKEN_VALIDITY = 120 * 60; // 2 hrs
     public static final long JWT_VERIFY_VALIDITY = 3 * 24 * 60 * 60; // 3 days
 
-    @Value("${JWT_SECRET}")
+    @Value("${JWT_SECRET:secret}")
     public String SECRET;
 
     //retrieve username from jwt token
