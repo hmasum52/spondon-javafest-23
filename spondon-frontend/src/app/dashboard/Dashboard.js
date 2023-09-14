@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ProgressBar } from "react-bootstrap";
 // import {Bar, Doughnut} from 'react-chartjs-2';
 import DatePicker from "react-datepicker";
 import logo from "../logo.svg";
+import { getDashboard } from "../api/dashboard";
 
 // import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
+
+  useEffect(() => {
+    getDashboard().then(data => console.log(data))
+  }, [])
+
   return (
     <div>
       <div className="page-header">

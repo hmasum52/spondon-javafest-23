@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish="./spondon-frontend/build"
+  base = "./spondon-frontend"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
