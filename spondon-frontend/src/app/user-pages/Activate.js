@@ -1,14 +1,66 @@
-import { Link, useParams } from "react-router-dom";
+import { useRef, useState } from "react";
+import { FileUploader } from "react-drag-drop-files";
+import { Link, useParams, useHistory } from "react-router-dom";
+import { uploadImage } from "../api/external";
+import toast from "react-hot-toast";
+import { Button, Col, Form, Row } from "react-bootstrap";
+import DatePicker from "react-datepicker";
+import { activate } from "../api/auth";
 
 export default function Activate() {
+  const { token } = useParams();
+  const history = useHistory();
+  const [imageURL, setImageUrl] = useState("");
 
-  const {token} = useParams();
+  const nameRef = useRef();
+  const birthRef = useRef();
+  const bloodRef = useRef();
+  const aboutRef = useRef();
+  const birthCertRef = useRef();
+
+  const handleSubmit = (e) => {
+    try {
+      const name = nameRef.current.value;
+      const dateOfBirth = birthRef.current.value;
+      const bloodGroup = bloodRef.current.selectedOptions[0].value;
+      const about = aboutRef.current.value;
+      const birthCertificateNumber = birthCertRef.current.value;
+
+      if (!name || !dateOfBirth || !birthCertificateNumber) {
+        throw new Error(
+          `Please fill Name, Date of Birth and Birth Certificate Number`
+        );
+      }
+
+      const userInfo = {
+        name,
+        dateOfBirth,
+        bloodGroup,
+        about,
+        birthCertificateNumber,
+        imageURL,
+      };
+
+      const toastId = toast.loading("Activating account...");
+      activate(token, userInfo).then((e) => {
+        toast.dismiss(toastId);
+        toast.success("Account activated successfully! Log in to continue...");
+        history.push("/auth/login");
+      }).catch(e => {
+        toast.dismiss(toastId);
+        toast.error("Account activation failed! Try again later...");
+      })
+    } catch (e) {
+      console.log(e);
+      toast.error(e.message);
+    }
+  };
 
   return (
     <div>
       <div className="d-flex align-items-center auth px-0">
         <div className="row w-100 mx-0">
-          <div className="col-lg-4 mx-auto">
+          <div className="col-lg-5 mx-auto">
             <div className="auth-form-light text-left py-5 px-4 px-sm-5">
               <div className="brand-logo">
                 <img
@@ -25,58 +77,91 @@ export default function Activate() {
                   <input
                     type="text"
                     className="form-control form-control-lg"
-                    id="exampleInputUsername1"
+                    ref={nameRef}
                     placeholder="Name"
+                  />
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                  {imageURL && (
+                    <img
+                      src={imageURL}
+                      alt="Profile"
+                      style={{ maxHeight: "4rem", maxWidth: "20%" }}
+                    />
+                  )}
+                  <FileUploader
+                    className="flex-grow-1"
+                    style={{ minWidth: "100px" }}
+                    label="Upload or drop your profile picture here"
+                    handleChange={(file) => {
+                      const toastId = toast.loading("Uploading image...");
+                      uploadImage(file)
+                        .then((url) => {
+                          toast.dismiss(toastId);
+                          toast.success("Image uploaded successfully!");
+                          setImageUrl(url);
+                        })
+                        .catch((e) => {
+                          console.log(e);
+                          toast.dismiss(toastId);
+                          toast.error("Image upload failed!");
+                        });
+                    }}
+                    name="file"
+                    types={["JPG", "JPEG", "PNG", "BMP"]}
                   />
                 </div>
                 <div className="form-group">
                   <input
                     type="number"
                     className="form-control form-control-lg"
-                    id="exampleInputUsername1"
+                    ref={birthCertRef}
                     placeholder="Birth Certificate Number"
                   />
                 </div>
                 <div className="form-group">
+                  <Form.Control
+                    type="date"
+                    className="form-control form-control-lg"
+                    ref={birthRef}
+                    placeholder="Date of Birth"
+                    title="Date of Birth"
+                  />
+                </div>
+                <div className="form-group text-dark">
                   <select
                     className="form-control form-control-lg"
-                    id="exampleFormControlSelect2"
+                    ref={bloodRef}
+                    selected=""
                   >
-                    <option hidden disabled>Blood Group</option>
-                    <option>A+</option>
-                    <option>A-</option>
-                    <option>B+</option>
-                    <option>B-</option>
-                    <option>AB+</option>
-                    <option>AB-</option>
-                    <option>O+</option>
-                    <option>O-</option>
+                    <option hidden value="">
+                      Blood Group
+                    </option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O-">O-</option>
+                    <option value="O+">O+</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
                   </select>
                 </div>
-                <div className="form-group">
-                  <input
-                    type="text"
-                    className="form-control form-control-lg"
-                    id="exampleInputPassword2"
-                    placeholder="Date of Birth"
-                  />
-                </div>
-                <div className="form-group">
-                  <input
-                    type="text"
-                    className="form-control form-control-lg"
-                    id="exampleInputPassword2"
-                    placeholder="About Yourself"
-                  />
-                </div>
-                
+                <Form.Group
+                  className="mb-3"
+                  controlId="exampleForm.ControlTextarea1"
+                >
+                  <Form.Label>About Yourself</Form.Label>
+                  <Form.Control as="textarea" rows={4} ref={aboutRef} />
+                </Form.Group>
+
                 <div className="mt-3">
-                  <Link
+                  <Button
                     className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
-                    to="/dashboard"
+                    onClick={handleSubmit}
                   >
-                    SIGN UP
-                  </Link>
+                    Activate Account
+                  </Button>
                 </div>
                 <div className="text-center mt-4 font-weight-light">
                   Already have an account?{" "}
@@ -92,4 +177,3 @@ export default function Activate() {
     </div>
   );
 }
-

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 @Service
 public class PatientUserService {
@@ -17,10 +18,12 @@ public class PatientUserService {
     public static final String BIRTH_CERTIFICATE_NO = "birthCertificateNumber";
     public static final String DATE_OF_BIRTH        = "dateOfBirth";
 
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
     @Autowired
     PatientUserRepository patientUserRepository;
 
-    public PatientUser retrieve(PatientUser patientUser, JSONObject data) {
+    public PatientUser retrieve(PatientUser patientUser, JSONObject data) throws Exception {
         patientUser.setBloodGroup(
                 data.optString(BLOOD_GROUP_KEY));
         patientUser.setName(
@@ -31,8 +34,7 @@ public class PatientUserService {
                 data.getString(ABOUT_KEY));
         patientUser.setBirthCertificateNumber(
                 data.getLong(BIRTH_CERTIFICATE_NO));
-        patientUser.setDateOfBirth(new Date(
-                data.getLong(DATE_OF_BIRTH)));
+        patientUser.setDateOfBirth(formatter.parse(data.getString(DATE_OF_BIRTH)));
 
         return patientUser;
     }

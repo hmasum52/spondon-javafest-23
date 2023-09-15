@@ -46,18 +46,19 @@ function App() {
   axios.interceptors.response.use(
     (response) => response,
     (error) => {
-      console.log(error);
       const status = error?.response?.status;
 
       if (status === UNAUTHORIZED || status === FORBIDDEN) {
         localStorage.removeItem("token");
         setUser(null);
         toast.error("Please login again.");
-      } else {
-        const message = error?.response?.message || "Something went wrong...";
-        toast.error(message);
-      }
-      return new Promise(() => {});
+        return new Promise(() => {});
+      } 
+      // else {
+      //   const message = error?.response?.data || "Failed";
+      //   toast.error(message);
+      // }
+      return Promise.reject(error);
     }
   );
 

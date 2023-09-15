@@ -4,7 +4,7 @@ export const UNAUTHORIZED = 401, FORBIDDEN = 403;
 const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:8080";
 
 
-export const api_url = (path) => (`${BASE_URL}${path}`)
+export const api_url = (path) => (`${BASE_URL}/api/v1${path}`)
 
 axios.interceptors.request.use( config => {
     const jwt = localStorage.getItem("token")

@@ -41,7 +41,7 @@ public class AuthService {
     public static final String VERIFY_FORGOT        = "forgot";
 
     public static final Pattern USERNAME_MATCHER = Pattern.compile(
-            "^[A-Za-z]\\w{5,29}$"
+            "^[A-Za-z]\\w{4,29}$"
     );
     public static final Pattern PASSWORD_MATCHER = Pattern.compile(
             "^.{8,20}$"
@@ -141,13 +141,17 @@ public class AuthService {
 
         user.setActive(true);
         userService.update(user);
-
-        PatientUser patientUser = patientUserService.retrieve(new PatientUser(), object);
-        patientUser.setId(user.getId());
-        patientUser.setUser(user);
-        logger.log(Level.INFO, "User Activated: {}", patientUser);
-        patientUserService.save(patientUser);
-        return true;
+        try {
+            PatientUser patientUser = patientUserService.retrieve(new PatientUser(), object);
+            patientUser.setId(user.getId());
+            patientUser.setUser(user);
+            logger.log(Level.INFO, "User Activated: {}", patientUser);
+            patientUserService.save(patientUser);
+            return true;
+        } catch (Exception e) {
+            logger.log(Level.ERROR, "User Activation Failed: {}", e.getMessage());
+            return false;
+        }
     }
 
     public boolean forgotPassword(JSONObject data) {
@@ -164,7 +168,7 @@ public class AuthService {
                 "Confirm Password Reset",
                 "Go to the link below to reset your Spondon Account Password\n"+
                         "[Sorry for <"+FRONTEND_URL+">, I was blocked and site was flagged not safe]\n"+
-                        FRONTEND_URL+"/forgot/"+jwtVerification
+                        FRONTEND_URL+"/auth/forget-password?token="+jwtVerification
         );
 
         return true;

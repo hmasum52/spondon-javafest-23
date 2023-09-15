@@ -1,10 +1,18 @@
+import { useRef } from "react";
 import { Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { validate } from "./validate";
+import toast from "react-hot-toast";
+import { forgetPassword, resetPassword } from "../api/auth";
 
 export function LockScreen() {
   // check if query param is present
   const queryParams = new URLSearchParams(window.location.search);
   const token = queryParams.get("token");
+  const history = useHistory();
+  const inputRef = useRef();
+  const confirmRef = useRef();
+
   // Take Email as input
   if (!token)
     return (
@@ -26,10 +34,38 @@ export function LockScreen() {
                       type="email"
                       className="form-control text-center"
                       placeholder="Email"
+                      ref={inputRef}
                     />
                   </div>
                   <div className="mt-5">
-                    <Button className="btn btn-block btn-success btn-lg font-weight-medium">
+                    <Button
+                      className="btn btn-block btn-success btn-lg font-weight-medium"
+                      onClick={(e) => {
+                        const email = inputRef.current.value;
+                        const err = validate({ email });
+                        if (err) {
+                          toast.error(err);
+                        } else {
+                          const toastId = toast.loading(
+                            "Sending password reset request..."
+                          );
+                          forgetPassword(email)
+                            .then((res) => {
+                              toast.dismiss(toastId);
+                              toast.success(
+                                "Password reset request sent successfully! Check your mail for further instructions."
+                              );
+                              history.push("/auth/login");
+                            })
+                            .catch((err) => {
+                              toast.dismiss(toastId);
+                              toast.error(
+                                "Password reset request failed! Try again later."
+                              );
+                            });
+                        }
+                      }}
+                    >
                       Request Password Reset
                     </Button>
                   </div>
@@ -64,11 +100,13 @@ export function LockScreen() {
                     <input
                       type="password"
                       className="form-control text-center"
+                      ref={inputRef}
                       placeholder="Password"
                     />{" "}
                     <br />
                     <input
                       type="password"
+                      ref={confirmRef}
                       className="form-control text-center"
                       placeholder="Confirm Password"
                     />
@@ -76,7 +114,29 @@ export function LockScreen() {
                   <div className="mt-5">
                     <Button
                       className="btn btn-block btn-success btn-lg font-weight-medium"
-                      to="/dashboard"
+                      onClick={(e) => {
+                        const password = inputRef.current.value
+                        const confirmPassword = confirmRef.current.value
+                        const err = validate({password})
+                        if (err) {
+                          toast.error(err);
+                        } else if (password !== confirmPassword) {
+                          toast.error("Passwords do not match");
+                        } else {
+                          const toastId = toast.loading(
+                            "Updating password..."
+                          );
+                          resetPassword(token, password).then(res => {
+                            toast.dismiss(toastId);
+                            toast.success("Password updated successfully! Login to continue...");
+                            history.push("/auth/login");
+                          }).then(err => {
+                            toast.dismiss(toastId);
+                            toast.error("Password update failed! Try again later...");
+                          })
+                        }
+
+                      }}
                     >
                       Update
                     </Button>

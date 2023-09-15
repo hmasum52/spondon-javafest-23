@@ -1,6 +1,43 @@
-import { Link } from "react-router-dom";
+import { useRef } from "react";
+import toast from "react-hot-toast";
+import { Link, useHistory } from "react-router-dom";
+import { validate } from "./validate";
+import { register } from "../api/auth";
+import { Button } from "react-bootstrap";
 
 export default function Register() {
+  const history = useHistory();
+
+  const usernameRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
+
+  const handleRegister = () => {
+    const username = usernameRef.current.value;
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    const confirmPassword = confirmPasswordRef.current.value;
+
+    const err = validate({ username, email, password });
+    
+    if (err) {
+      toast.error(err);
+    } else if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+    } else {
+      const toastId = toast.loading("Registering", { duration: 5000 });
+      register(username, email, password).then((res) => {
+        toast.dismiss(toastId);
+        history.push("/auth/login");
+        toast.success("Check your mail for account confiramtion", {duration: 5000});
+      }).catch(err => {
+        toast.dismiss(toastId);
+        toast.error("Registration failed! Try again later.")
+      })
+    }
+  };
+
   return (
     <div>
       <div className="d-flex align-items-center auth px-0">
@@ -22,7 +59,7 @@ export default function Register() {
                   <input
                     type="text"
                     className="form-control form-control-lg"
-                    id="exampleInputUsername1"
+                    ref={usernameRef}
                     placeholder="Username"
                   />
                 </div>
@@ -30,7 +67,7 @@ export default function Register() {
                   <input
                     type="email"
                     className="form-control form-control-lg"
-                    id="exampleInputEmail1"
+                    ref={emailRef}
                     placeholder="Email"
                   />
                 </div>
@@ -51,7 +88,7 @@ export default function Register() {
                   <input
                     type="password"
                     className="form-control form-control-lg"
-                    id="exampleInputPassword1"
+                    ref={passwordRef}
                     placeholder="Password"
                   />
                 </div>
@@ -59,7 +96,7 @@ export default function Register() {
                   <input
                     type="password"
                     className="form-control form-control-lg"
-                    id="exampleInputPassword2"
+                    ref={confirmPasswordRef}
                     placeholder="Confirm Password"
                   />
                 </div>
@@ -73,12 +110,12 @@ export default function Register() {
                   </div>
                 </div> */}
                 <div className="mt-3">
-                  <Link
+                  <Button
                     className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
-                    to="/dashboard"
+                    onClick={handleRegister}
                   >
                     SIGN UP
-                  </Link>
+                  </Button>
                 </div>
                 <div className="text-center mt-4 font-weight-light">
                   Already have an account?{" "}
@@ -94,4 +131,3 @@ export default function Register() {
     </div>
   );
 }
-
