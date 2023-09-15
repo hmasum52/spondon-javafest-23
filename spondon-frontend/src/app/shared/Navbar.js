@@ -12,7 +12,7 @@ function Navbar() {
     document.querySelector(".right-sidebar").classList.toggle("open");
   };
 
-  const { setUser } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -54,13 +54,13 @@ function Navbar() {
               <Dropdown.Toggle className="nav-link">
                 <div className="nav-profile-img">
                   <img
-                    src={require("../../assets/images/faces/face1.jpg")}
+                    src={user?.image || require("../../assets/images/faces/face1.jpg")}
                     alt="user"
                   />
                   <span className="availability-status online"></span>
                 </div>
                 <div className="nav-profile-text">
-                  <p className="mb-1 text-black">MJKSabit</p>
+                  <p className="mb-1 text-black">{user?.username || "User"}</p>
                 </div>
               </Dropdown.Toggle>
 
@@ -69,8 +69,8 @@ function Navbar() {
                   href="!#"
                   onClick={(evt) => evt.preventDefault()}
                 >
-                  <i className="mdi mdi-cached mr-2 text-success"></i>
-                  Activity Log
+                  <i className="mdi mdi-security mr-2 text-success"></i>
+                  Security Settings
                 </Dropdown.Item>
                 <Dropdown.Item
                   href="!#"
@@ -137,7 +137,7 @@ function Navbar() {
                 </Dropdown.Menu>
               </Dropdown>
             </li> */}
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <Dropdown alignRight>
               <Dropdown.Toggle className="nav-link count-indicator">
                 <i className="mdi mdi-bell-outline"></i>
@@ -204,7 +204,7 @@ function Navbar() {
                 </h6>
               </Dropdown.Menu>
             </Dropdown>
-          </li>
+          </li> */}
           <li className="nav-item nav-logout d-none d-lg-block">
             <a
               className="nav-link"
@@ -219,7 +219,7 @@ function Navbar() {
               <i className="mdi mdi-power"></i>
             </a>
           </li>
-          <li className="nav-item nav-settings d-none d-lg-block">
+          {/* <li className="nav-item nav-settings d-none d-lg-block">
             <button
               type="button"
               className="nav-link border-0"
@@ -227,7 +227,7 @@ function Navbar() {
             >
               <i className="mdi mdi-format-line-spacing"></i>
             </button>
-          </li>
+          </li> */}
         </ul>
         <button
           className="navbar-toggler navbar-toggler-right d-lg-none align-self-center"

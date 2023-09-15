@@ -11,6 +11,8 @@ import "./App.css";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import { FORBIDDEN, UNAUTHORIZED } from "./api";
 import { Toaster, toast } from "react-hot-toast";
+import { isCursorAtEnd } from "@testing-library/user-event/dist/utils";
+import UserSidebar from "./user/UserSidebar";
 
 export const UserContext = createContext({
   user: undefined,
@@ -18,7 +20,7 @@ export const UserContext = createContext({
 });
 export const UserProvider = UserContext.Provider;
 
-export const parseJwt = (token) => {
+export const parseUserFromJwt = (token) => {
   try {
     const base64Url = token.split(".")[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -28,8 +30,12 @@ export const parseJwt = (token) => {
         .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
         .join("")
     );
-
-    return JSON.parse(jsonPayload);
+    const rawPayload = JSON.parse(jsonPayload);
+    const user = {
+      username: rawPayload.sub,
+      role: rawPayload.role.reduce((acc, cur) => `${acc}${cur.authority}`, ""),
+    };
+    return user;
   } catch (e) {
     return null;
   }
@@ -39,7 +45,9 @@ function App() {
   const location = useLocation();
   const [isFullPageLayout, setIsFullPageLayout] = useState(false);
 
-  const [user, setUser] = useState(parseJwt(localStorage.getItem("token")));
+  const [user, setUser] = useState(
+    parseUserFromJwt(localStorage.getItem("token"))
+  );
 
   console.log("user: ", user);
 
@@ -53,7 +61,7 @@ function App() {
         setUser(null);
         toast.error("Please login again.");
         return new Promise(() => {});
-      } 
+      }
       // else {
       //   const message = error?.response?.data || "Failed";
       //   toast.error(message);
@@ -87,7 +95,10 @@ function App() {
   }
 
   let navbarComponent = !isFullPageLayout ? <Navbar /> : "";
-  let sidebarComponent = !isFullPageLayout ? <Sidebar /> : "";
+  let sidebarComponent = !isFullPageLayout ? (
+    user?.role === "ROLE_USER" ? 
+  <UserSidebar /> : <Sidebar />
+  ) : "";
   let SettingsPanelComponent = !isFullPageLayout ? <SettingsPanel /> : "";
   let footerComponent = !isFullPageLayout ? <Footer /> : "";
 

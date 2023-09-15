@@ -4,7 +4,7 @@ import { useRef } from "react";
 import toast from "react-hot-toast";
 import { login } from "../api/auth";
 import { useContext } from "react";
-import { UserContext, parseJwt } from "../App";
+import { UserContext, parseUserFromJwt } from "../App";
 import { validate } from "./validate";
 
 export const USERNAME_DETAILS = "Username must be between 6 and 30 characters long and can only contain alphanumeric characters and underscores, starting with an alphabet.";
@@ -36,7 +36,7 @@ export function Login() {
         toast.success("Logged in successfully!");
         console.log(res);
         localStorage.setItem("token", res.jwt);
-        setUser(parseJwt(res.jwt));
+        setUser(parseUserFromJwt(res.jwt));
       }).catch((err) => {
         toast.dismiss(toastId);
         toast.error("Login failed!");
