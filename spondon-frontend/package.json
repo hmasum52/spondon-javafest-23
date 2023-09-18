@@ -13,6 +13,7 @@
     "bootstrap": "^4.6.0",
     "compass-mixins": "^0.12.12",
     "firebase": "^10.4.0",
+    "jsencrypt": "^3.3.2",
     "nouislider": "^15.7.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.8.0",
@@ -24,6 +25,7 @@
     "react-router-dom": "^5.3.4",
     "react-scripts": "5.0.1",
     "scss": "^0.2.4",
+    "uuid": "^9.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

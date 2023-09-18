@@ -1,4 +1,4 @@
-const JSEncrypt = window.JSEncrypt
+import JSEncrypt from "jsencrypt";
 
 // Start our encryptor.
 // var encrypt = new JSEncrypt();

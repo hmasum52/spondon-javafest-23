@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Form } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Form, ProgressBar, Table } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { FileUploader } from "react-drag-drop-files";
+import { v4 as uuidv4 } from "uuid";
 import { aesGcmDecrypt, aesGcmEncrypt } from "./aes-gcm";
 import {
   decryptPassword,
@@ -10,6 +11,11 @@ import {
 } from "./public-private-encryption";
 import { save } from "./download";
 import { getHash } from "./sha256";
+import { getPossibleOwners, uploadDocument } from "../api/document";
+import { getIpLocation } from "../api/external";
+import { storage } from "../firebase-config";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import toast from "react-hot-toast";
 
 const generateRandomPassword = () => {
   let chars =
@@ -24,21 +30,158 @@ const generateRandomPassword = () => {
   return password;
 };
 
+const initialState = {
+  file: null,
+  name: "",
+  summary: "",
+  hash: "",
+  type: "",
+  url: "",
+  owner: null,
+  creationDate: "",
+  latitide: 0,
+  longitude: 0,
+  encryption: true,
+};
+
 export default function UploadDocument() {
-  const [fileDetails, setFileDetails] = useState({
-    file: null,
-    name: "",
-    summary: "",
-    hash: "",
-    type: "",
-    url: "",
-    statistics: "",
-    owner: null,
-    creationDate: "",
-    encryption: false,
-  });
+  const [fileDetails, setFileDetails] = useState(initialState);
 
   const [selectableUsers, setSelectableUsers] = useState([]);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    getPossibleOwners().then((users) => {
+      setSelectableUsers(users);
+    });
+    getIpLocation()
+      .then((location) => {
+        console.log("location: ", location);
+        setFileDetails({
+          ...fileDetails,
+          latitide: location.lat,
+          longitude: location.lon,
+        });
+      })
+      .catch((e) => console.log(e));
+  }, []);
+
+  let creationDate = null;
+  if (fileDetails.creationDate) {
+    creationDate = new Date(fileDetails.creationDate);
+    creationDate = new Date(
+      creationDate.getTime() - creationDate.getTimezoneOffset() * 60000
+    );
+    creationDate = creationDate.toISOString().split("T")[0];
+  }
+
+  const uploadToFirebase = (documentId, file) =>
+    new Promise((resolve, reject) => {
+      const toastId = toast.loading("Uploading document...");
+      const storageRef = ref(storage, `/documents/${documentId}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const percent = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setProgress(percent);
+        },
+        (e) => {
+          toast.dismiss(toastId);
+          toast.error("File upload failed!");
+          console.log(e);
+          reject(e);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            console.log(url);
+          });
+          toast.dismiss(toastId);
+          toast.success("File uploaded successfully!");
+          resolve();
+        }
+      );
+    });
+
+  const encryptFile = (file, aesKey) =>
+    new Promise((resolve, reject) => {
+      const toastId = toast.loading("Encrypting document...");
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const encrypted = await aesGcmEncrypt(reader.result, aesKey);
+        const encryptedFile = new File(
+          [new Blob([encrypted], { type: "text/plain" })],
+          file.name,
+          {
+            type: file.type,
+          }
+        );
+        toast.dismiss(toastId);
+        toast.success("Document encrypted successfully!");
+        resolve(encryptedFile);
+      };
+      reader.onerror = (e) => {
+        toast.dismiss(toastId);
+        toast.error("Document encryption failed!");
+        reject(e);
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+  const uploadFile = async (e) => {
+    e.preventDefault();
+    const documentId = uuidv4();
+    let {
+      name,
+      summary: anonymous,
+      hash,
+      creationDate: creationTime,
+      type,
+      latitide: latitude,
+      longitude,
+      owner,
+      file,
+      encryption,
+    } = fileDetails;
+
+    let aesKey = "";
+    
+    if (encryption && owner?.user.publicKey) {
+      const password = generateRandomPassword();
+      console.log("password: ", password);
+      const publicKey = owner.user.publicKey;
+      console.log("publicKey: ", publicKey);
+      aesKey = await encryptPassword(password, publicKey);
+      console.log("aesKey: ", aesKey);
+
+      file = await encryptFile(file, aesKey);
+    }
+    
+    await uploadToFirebase(documentId, file);
+
+    owner = owner?.user?.username;
+    const toastId = toast.loading("Uploading document details...", {
+      duration: 5000,
+    });
+    await uploadDocument({
+      documentId,
+      name,
+      anonymous,
+      hash,
+      creationTime,
+      type,
+      latitude,
+      longitude,
+      owner,
+      aesKey,
+    });
+    toast.dismiss(toastId);
+    toast.success("Document uploaded successfully!");
+    setFileDetails(initialState);
+    setProgress(0);
+  };
 
   return (
     <div>
@@ -73,17 +216,12 @@ export default function UploadDocument() {
                       label="Upload or drop your document here"
                       handleChange={(file) => {
                         (async () => {
-                          let date = new Date(file.lastModifiedDate);
-                          date = new Date(
-                            date.getTime() - date.getTimezoneOffset() * 60000
-                          );
-                          date = date.toISOString().split("T")[0];
                           const hash = await getHash(file);
                           setFileDetails({
                             ...fileDetails,
                             file: file,
                             name: file.name,
-                            creationDate: date,
+                            creationDate: file.lastModifiedDate.getTime(),
                             hash: hash,
                           });
                         })();
@@ -162,45 +300,26 @@ export default function UploadDocument() {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-md-6">
+                  <div className="col-md-12">
                     <div className="form-group">
                       <label htmlFor="documentSummery">
                         {" "}
-                        Document Summary (not saved){" "}
+                        Document Summary (collected anonymously for public
+                        health analysis){" "}
                       </label>
                       <input
                         type="text"
                         className="form-control"
                         id="documentSummery"
-                        contentEditable={false}
-                        placeholder="Document Summary"
-                        value={fileDetails.summary}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <label htmlFor="documentType">
-                        Anonymous Health Statistics
-                      </label>
-                      <select
-                        className="form-control"
-                        id="documentType"
-                        value={fileDetails.statistics}
                         onChange={(e) => {
                           setFileDetails({
                             ...fileDetails,
-                            statistics: e.target.value,
+                            summary: e.target.value,
                           });
                         }}
-                      >
-                        <option value={""}>None</option>
-                        <option value={"Hepatitis"}>Hepatitis</option>
-                        <option value={"Maleria"}>Maleria</option>
-                        <option value={"Dengue"}>Dengue</option>
-                        <option value={"Covid-19"}>Covid-19</option>
-                        <option value={"Polio"}>Polio</option>
-                      </select>
+                        placeholder="Document Summary"
+                        value={fileDetails.summary}
+                      />
                     </div>
                   </div>
                 </div>
@@ -216,7 +335,10 @@ export default function UploadDocument() {
                           });
                         }}
                         options={selectableUsers}
-                        selected={fileDetails.owner}
+                        labelKey={(option) =>
+                          `${option.name} (${option.birthCertificateNumber})`
+                        }
+                        filterBy={["name", "birthCertificateNumber"]}
                         placeholder="Owner of the document..."
                       />
                     </div>
@@ -227,18 +349,19 @@ export default function UploadDocument() {
                       <input
                         type="checkbox"
                         className="form-control big-checkbox"
-                        disabled={!fileDetails.owner?.publicKey}
+                        disabled={!fileDetails.owner?.user.publicKey}
                         title={
-                          !fileDetails.owner?.publicKey &&
+                          !fileDetails.owner?.user.publicKey &&
                           "Please select a user with public key to encrypt the document"
                         }
-                        value={
-                          fileDetails.owner?.publicKey && fileDetails.encryption
+                        checked={
+                          fileDetails.owner?.user.publicKey &&
+                          fileDetails.encryption
                         }
                         onChange={(e) => {
                           setFileDetails({
                             ...fileDetails,
-                            encryption: e.target.value,
+                            encryption: e.target.checked,
                           });
                         }}
                       />
@@ -250,11 +373,14 @@ export default function UploadDocument() {
                       <input
                         type="date"
                         className="form-control"
-                        value={fileDetails.creationDate}
+                        value={creationDate}
                         onChange={(e) => {
+                          const [year, month, day] = e.target.value.split("-");
                           setFileDetails({
                             ...fileDetails,
-                            creationDate: e.target.value,
+                            creationDate: new Date(
+                              `${month}/${day}/${year}`
+                            ).getTime(),
                           });
                         }}
                       />
@@ -263,13 +389,57 @@ export default function UploadDocument() {
                 </div>
                 <p className="card-description">Owner Details</p>
                 <div className="flex mb-4">
-                  {fileDetails.owner && `${fileDetails.owner.name}`}
+                  {fileDetails.owner && (
+                    <Table striped bordered hover>
+                      <tbody>
+                        <tr>
+                          <th>Image</th>
+                          <th>
+                            Name (Username: {fileDetails.owner.user.username})
+                          </th>
+                          <th>Birth Certificate #</th>
+                        </tr>
+                        <tr>
+                          <td>
+                            <img
+                              src={fileDetails.owner.imageURL}
+                              alt="Profile"
+                            />
+                          </td>
+                          <td>{fileDetails.owner.name}</td>
+                          <td>{fileDetails.owner.birthCertificateNumber}</td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  )}
                 </div>
 
-                <button type="submit" className="btn btn-gradient-primary mr-2">
+                <ProgressBar
+                  className={`w-100 mb-3 ${!progress ? "d-none" : ""}`}
+                  style={{ height: "2rem" }}
+                  variant="success"
+                  animated
+                  now={progress}
+                  max={100}
+                />
+
+                <button
+                  type="submit"
+                  className="btn btn-gradient-primary mr-2"
+                  onClick={uploadFile}
+                >
                   Submit
                 </button>
-                <button className="btn btn-light">Cancel</button>
+                <button
+                  className="btn btn-light"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setFileDetails(initialState);
+                    setProgress(0);
+                  }}
+                >
+                  Cancel
+                </button>
               </form>
             </div>
           </div>

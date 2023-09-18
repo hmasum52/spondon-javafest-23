@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 @Service
 public class PatientUserService {
@@ -41,6 +42,14 @@ public class PatientUserService {
 
     public PatientUser get(String username) {
         return patientUserRepository.findPatientUserByUserUsernameIgnoreCase(username);
+    }
+
+    public List<PatientUser> getAll() {
+        return patientUserRepository.findAll();
+    }
+
+    public List<PatientUser> getAll(String username) {
+        return patientUserRepository.findAllByUserUsernameIgnoreCase(username);
     }
 
     public void save(PatientUser patientUser) {

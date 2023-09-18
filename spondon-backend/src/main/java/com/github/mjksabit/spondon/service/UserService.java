@@ -106,4 +106,8 @@ public class UserService {
     public User getUserDetails(String username) {
         return userRepository.findUserByUsernameIgnoreCase(username);
     }
+
+    public String getRole(String username) {
+        return userRepository.findUserByUsernameIgnoreCase(username).getRole();
+    }
 }

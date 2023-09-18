@@ -63,6 +63,10 @@ public class WebSecurityConfig {
                         AuthService.ROLE_DOCTOR,
                         AuthService.ROLE_HOSPITAL,
                         AuthService.ROLE_ADMIN
+                ).antMatchers(path("/api/v1/document-upload/**"), path("/api/v1/document-upload")).hasAnyRole(
+                        AuthService.ROLE_DOCTOR,
+                        AuthService.ROLE_HOSPITAL,
+                        AuthService.ROLE_USER
                 ).anyRequest().permitAll()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
