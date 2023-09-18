@@ -12,18 +12,28 @@ const Register = lazy(() => import("./user-pages/Register"));
 const ForgetPassword = lazy(() => import("./user-pages/ForgetPassword"));
 const Activate = lazy(() => import("./user-pages/Activate"));
 
+const SecuritySettings = lazy(() => import("./common/SecuritySettings"));
+
 const UserHome = lazy(() => import("./user/Dashboard"));
+const AddDocument = lazy(() => import("./common/UploadDocument"));
 
 export default function AppRoutes() {
   const { user } = useContext(UserContext);
-
+  
   return (
     <Suspense fallback={<Spinner />}>
       <Switch>
-        {user?.role === "ROLE_USER" && (
+        {user && (
           <Switch>
-            <Route path="/user/dashboard" component={UserHome} />
-            <Redirect to="/user/dashboard" />
+            <Route path="/security-settings" component={SecuritySettings} />
+            
+            {user?.role === "ROLE_USER" && (
+              <Switch>
+                <Route path="/user/dashboard" component={UserHome} />
+                <Route path="/user/documents/add" component={AddDocument} />
+                <Redirect to="/user/dashboard" />
+              </Switch>
+            )}
           </Switch>
         )}
 

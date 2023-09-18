@@ -72,7 +72,38 @@ public class UserService {
         return userRepository.countUserByEmailOrUsernameIgnoreCase(user.getEmail(), user.getUsername()) > 0;
     }
 
+    public boolean updatePublicKey(String username, String publicKey) {
+        User user = userRepository.findUserByUsernameIgnoreCase(username);
+        user.setPublicKey(publicKey);
+        userRepository.save(user);
+        return true;
+    }
+
+    public boolean updatePassword(String username, String oldPassword, String newPassword) {
+        User user = userRepository.findUserByUsernameIgnoreCase(username);
+        if (matchPassword(user, oldPassword)) {
+            user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateUsernameEmail(String username, String newUsername, String newEmail) {
+        User user = userRepository.findUserByUsernameIgnoreCase(username);
+        if (user == null) return false;
+        user.setUsername(newUsername);
+        user.setEmail(newEmail);
+        userRepository.save(user);
+        return true;
+    }
+
+
     public void update(User user) {
         userRepository.save(user);
+    }
+
+    public User getUserDetails(String username) {
+        return userRepository.findUserByUsernameIgnoreCase(username);
     }
 }

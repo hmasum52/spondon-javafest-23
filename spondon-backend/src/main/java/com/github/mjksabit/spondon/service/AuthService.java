@@ -34,7 +34,8 @@ public class AuthService {
     public static final String PASSWORD_KEY         = "password";
 
     public static final String ROLE_USER            = "USER";
-    public static final String ROLE_BLOOD_BANK      = "BLOODBANK";
+    public static final String ROLE_DOCTOR          = "DOCTOR";
+    public static final String ROLE_HOSPITAL        = "HOSTPITAL";
     public static final String ROLE_ADMIN           = "ADMIN";
 
     public static final String VERIFY_ACTIVATE      = "activate";

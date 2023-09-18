@@ -1,9 +1,11 @@
 import { useContext } from "react";
 import { Dropdown } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { UserContext } from "../App";
 
 function Navbar() {
+  const history = useHistory();
+
   const toggleOffcanvas = () => {
     document.querySelector(".sidebar-offcanvas").classList.toggle("active");
   };
@@ -54,7 +56,10 @@ function Navbar() {
               <Dropdown.Toggle className="nav-link">
                 <div className="nav-profile-img">
                   <img
-                    src={user?.image || require("../../assets/images/faces/face1.jpg")}
+                    src={
+                      user?.image ||
+                      require("../../assets/images/faces/face1.jpg")
+                    }
                     alt="user"
                   />
                   <span className="availability-status online"></span>
@@ -66,8 +71,11 @@ function Navbar() {
 
               <Dropdown.Menu className="navbar-dropdown">
                 <Dropdown.Item
-                  href="!#"
-                  onClick={(evt) => evt.preventDefault()}
+                  href="/security-settings"
+                  onClick={(evt) => {
+                    evt.preventDefault();
+                    history.push("/security-settings");
+                  }}
                 >
                   <i className="mdi mdi-security mr-2 text-success"></i>
                   Security Settings

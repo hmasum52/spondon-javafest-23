@@ -44,6 +44,10 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String role;
 
+    @Column(length = 1025)
+    @JsonView(View.Public.class)
+    private String publicKey;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

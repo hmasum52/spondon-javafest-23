@@ -41,7 +41,7 @@ public class WebSecurityConfig {
 
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-//
+    //
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
@@ -54,9 +54,16 @@ public class WebSecurityConfig {
         http.csrf().disable().cors().and()
                 .authorizeRequests()
                 .antMatchers(path("/auth/**"), path("/verify")).permitAll()
-                .antMatchers(path("/admin/**"), path("/admin")).hasRole(AuthService.ROLE_ADMIN)
-                .antMatchers(path("/user/**"), path("/user")).hasRole(AuthService.ROLE_USER)
-                .anyRequest().permitAll()
+                .antMatchers(path("/admin/**"), path("/admin")).hasRole(
+                        AuthService.ROLE_ADMIN
+                ).antMatchers(path("/user/**"), path("/user")).hasRole(
+                        AuthService.ROLE_USER
+                ).antMatchers(path("/api/v1/security/**")).hasAnyRole(
+                        AuthService.ROLE_USER,
+                        AuthService.ROLE_DOCTOR,
+                        AuthService.ROLE_HOSPITAL,
+                        AuthService.ROLE_ADMIN
+                ).anyRequest().permitAll()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
