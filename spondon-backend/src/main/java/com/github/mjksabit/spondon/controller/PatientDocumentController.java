@@ -35,4 +35,14 @@ public class PatientDocumentController {
         String username = jwtTokenUtil.getUsernameFromToken(jwt);
         return ResponseEntity.ok(documentService.getPendingDocuments(username, page));
     }
+
+    @PutMapping(path = "/approve/{id}")
+    public ResponseEntity<?> approveDocument(@RequestHeader("Authorization") String bearerToken, @PathVariable long id) {
+        String jwt = bearerToken.substring(7);
+        String username = jwtTokenUtil.getUsernameFromToken(jwt);
+        if (documentService.approveDocument(username, id))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().build();
+    }
 }

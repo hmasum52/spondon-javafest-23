@@ -11,7 +11,6 @@ import java.util.Date;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 @Table(name = "document_table")
 public class Document {
-    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

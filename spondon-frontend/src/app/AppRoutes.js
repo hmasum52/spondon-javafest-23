@@ -17,6 +17,7 @@ const SecuritySettings = lazy(() => import("./common/SecuritySettings"));
 const UserHome = lazy(() => import("./user/Dashboard"));
 const AddDocument = lazy(() => import("./common/UploadDocument"));
 const ViewDocuments = lazy(() => import("./user/OwnedDocuments"));
+const PendingDocuments = lazy(() => import("./user/NotAcceptedDocuments"));
 
 export default function AppRoutes() {
   const { user } = useContext(UserContext);
@@ -33,6 +34,7 @@ export default function AppRoutes() {
                 <Route path="/user/dashboard" component={UserHome} />
                 <Route path="/user/documents/add" component={AddDocument} />
                 <Route path="/user/documents/view" component={ViewDocuments} />
+                <Route path="/user/documents/accept" component={PendingDocuments} />
                 <Redirect to="/user/dashboard" />
               </Switch>
             )}

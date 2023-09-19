@@ -88,4 +88,13 @@ public class DocumentService {
         );
     }
 
+    public boolean approveDocument(String username, long id) {
+        Document document = documentRepository.findById(id).orElse(null);
+        if (document == null) return false;
+        if (!document.getOwner().getUser().getUsername().equalsIgnoreCase(username))
+            return false;
+        document.setAccepted(true);
+        documentRepository.save(document);
+        return true;
+    }
 }

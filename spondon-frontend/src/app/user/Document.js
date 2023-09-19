@@ -5,6 +5,8 @@ import axios from "axios";
 import { decryptPassword } from "../common/public-private-encryption";
 import { aesDecrypt, aesGcmDecrypt } from "../common/aes-gcm";
 import toast from "react-hot-toast";
+import { acceptDocument } from "../api/document";
+import { useState } from "react";
 
 export async function downloadFromFirebase(documentId) {
   const storageRef = ref(storage, `documents/${documentId}`);
@@ -20,7 +22,7 @@ export async function decryptDocument(document, aesKey) {
   if (!privateKey) throw new Error("Private Key not found");
   const password = decryptPassword(aesKey, privateKey);
   if (!password) throw new Error("Password can not be decrypted");
-  console.log(password, document)
+  console.log(password, document);
   const decryptedDocument = await aesDecrypt(document, password);
   if (!decryptedDocument) throw new Error("Document can not be decrypted");
   return decryptedDocument;
@@ -28,6 +30,7 @@ export async function decryptDocument(document, aesKey) {
 
 export default function Document(document) {
   const secured = document.aesKey;
+  const [accepted, setAccepted] = useState(document?.accepted);
   return (
     <div className="col-md-6 grid-margin stretch-card">
       <div className="card">
@@ -89,7 +92,9 @@ export default function Document(document) {
                     toast.success("Document Previewed", { id: toastId });
                   } catch (error) {
                     console.log(error);
-                    toast.error("Error Occured: " + error?.message, { id: toastId });
+                    toast.error("Error Occured: " + error?.message, {
+                      id: toastId,
+                    });
                   }
                 })();
               }}
@@ -97,9 +102,21 @@ export default function Document(document) {
               View Document
             </button>
           </div>
-          {!document.accepted ? (
+          {!accepted ? (
             <div className="col-md-12">
-              <button className="btn btn-success btn-block">
+              <button
+                className="btn btn-success btn-block"
+                onClick={(e) => {
+                  toast.promise(
+                    acceptDocument(document.id).then((e) => setAccepted(true)),
+                    {
+                      loading: "Accepting Document...",
+                      success: "Document Accepted",
+                      error: "Error Occured",
+                    }
+                  );
+                }}
+              >
                 Accept Document
               </button>
             </div>

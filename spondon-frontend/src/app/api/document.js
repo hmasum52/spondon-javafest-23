@@ -9,3 +9,9 @@ export const uploadDocument = async (document) =>
 
 export const getOwnedDocuments = async (page) =>
     axios.get(api_url(`/user/document/all?page=${page}`)).then(res => res.data);
+
+export const getNotAcceptedDocuments = async (page) =>
+    axios.get(api_url(`/user/document/pending?page=${page}`)).then(res => res.data);
+
+export const acceptDocument = async (id) =>
+    axios.put(api_url(`/user/document/approve/${id}`)).then(res => res.data);
