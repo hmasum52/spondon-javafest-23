@@ -2,10 +2,8 @@ package com.github.mjksabit.spondon.service;
 
 import com.github.mjksabit.spondon.model.AnonymousData;
 import com.github.mjksabit.spondon.model.Document;
-import com.github.mjksabit.spondon.repository.AnonymousDataRepository;
-import com.github.mjksabit.spondon.repository.DocumentRepository;
-import com.github.mjksabit.spondon.repository.PatientUserRepository;
-import com.github.mjksabit.spondon.repository.UserRepository;
+import com.github.mjksabit.spondon.model.DocumentCollection;
+import com.github.mjksabit.spondon.repository.*;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class DocumentService {
@@ -40,6 +39,9 @@ public class DocumentService {
 
     @Autowired
     PatientUserRepository patientUserRepository;
+
+    @Autowired
+    CollectionRepository collectionRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -96,5 +98,58 @@ public class DocumentService {
         document.setAccepted(true);
         documentRepository.save(document);
         return true;
+    }
+
+    public List<DocumentCollection> getCollections(String username) {
+        return collectionRepository.findAllByOwnerUsername(username);
+    }
+
+    public void createCollection(String username, String name) {
+        DocumentCollection collection = new DocumentCollection();
+        collection.setName(name);
+        collection.setOwner(userRepository.findUserByUsernameIgnoreCase(username));
+        collectionRepository.save(collection);
+    }
+
+    public boolean setToCollection(String username, long id, long collectionId) {
+        Document document = documentRepository.findById(id).orElse(null);
+        if (document == null) return false;
+        if (!document.getOwner().getUser().getUsername().equalsIgnoreCase(username))
+            return false;
+
+        DocumentCollection collection = null;
+        if (collectionId != 0) {
+            collection = collectionRepository.findById(collectionId).orElse(null);
+            if (collection == null) return false;
+        }
+        document.setCollection(collection);
+        documentRepository.save(document);
+        return true;
+    }
+
+    public boolean updateCollection(String username, long id, String name) {
+        DocumentCollection collection = collectionRepository.findById(id).orElse(null);
+        if (collection == null) return false;
+        if (!collection.getOwner().getUsername().equalsIgnoreCase(username))
+            return false;
+        collection.setName(name);
+        collectionRepository.save(collection);
+        return true;
+    }
+
+    public boolean deleteCollection(String username, long id) {
+        DocumentCollection collection = collectionRepository.findById(id).orElse(null);
+        if (collection == null) return false;
+        if (!collection.getOwner().getUsername().equalsIgnoreCase(username))
+            return false;
+        collectionRepository.delete(collection);
+        return true;
+    }
+
+    public Slice<Document> getCollectionDocuments(String username, Long id, int page) {
+        return documentRepository.findAllByOwnerUserUsernameIgnoreCaseAndCollectionOwnerUsernameIgnoreCaseAndCollectionId(
+                username, username, id,
+                PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending())
+        );
     }
 }

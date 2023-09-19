@@ -11,4 +11,7 @@ public interface DocumentRepository extends PagingAndSortingRepository<Document,
     Slice<Document> findAllByOwnerUserUsernameIgnoreCaseAndAccepted(String username, boolean accepted, Pageable pageable);
 
     Slice<Document> findAllByUploaderUsernameIgnoreCase(String username, Pageable pageable);
+
+    Slice<Document> findAllByOwnerUserUsernameIgnoreCaseAndCollectionOwnerUsernameIgnoreCaseAndCollectionId(String username, String owner, long collectionId, Pageable pageable);
+
 }

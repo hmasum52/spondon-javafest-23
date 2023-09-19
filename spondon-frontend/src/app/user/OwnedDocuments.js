@@ -4,9 +4,14 @@ import {
   useLocation,
   useParams,
 } from "react-router-dom/cjs/react-router-dom.min";
-import { getOwnedDocuments } from "../api/document";
+import {
+  getCollections,
+  getOwnedDocuments,
+  setToCollection,
+} from "../api/document";
 import { Badge } from "react-bootstrap";
 import Document from "./Document";
+import toast from "react-hot-toast";
 
 export function useQuery() {
   const { search, location } = useLocation();
@@ -19,6 +24,7 @@ export default function OwnedDocuments() {
   const history = useHistory();
 
   const [documents, setDocuments] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [first, setFirst] = useState(true);
   const [last, setLast] = useState(true);
 
@@ -31,6 +37,28 @@ export default function OwnedDocuments() {
       });
     })();
   }, [page]);
+
+  useEffect(() => {
+    getCollections().then((res) => {
+      setCollections(res);
+    });
+  }, []);
+
+  const selectedCollection = (documentId, collectionId) => {
+    toast.promise(
+      setToCollection(documentId, collectionId).then((res) => {
+        const collection = collections.find((c) => c.id === collectionId) || null;
+        setDocuments(
+          documents.map((d) => (d.id === documentId ? { ...d, collection } : d))
+        );
+      }),
+      {
+        loading: "Saving to collection",
+        success: "Seved to collection",
+        error: "Failed saving to collection",
+      }
+    );
+  };
 
   return (
     <div>
@@ -52,7 +80,12 @@ export default function OwnedDocuments() {
 
       <div className="row">
         {documents.map((document) => (
-          <Document key={document.id} {...document} />
+          <Document
+            key={document.id}
+            document={document}
+            collections={collections}
+            selectedCollection={selectedCollection}
+          />
         ))}
       </div>
 

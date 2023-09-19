@@ -29,7 +29,7 @@ public class Document {
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date uploadTime;
+    private Date uploadTime = new Date();
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -50,4 +50,9 @@ public class Document {
 
     @Column(nullable = false)
     private boolean accepted = false;
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "collection_id", nullable = true)
+    private DocumentCollection collection;
 }

@@ -28,7 +28,7 @@ export async function decryptDocument(document, aesKey) {
   return decryptedDocument;
 }
 
-export default function Document(document) {
+export default function Document({document, collections = [], selectedCollection = (d,c) => {}, aesKey}) {
   const secured = document.aesKey;
   const [accepted, setAccepted] = useState(document?.accepted);
   return (
@@ -62,6 +62,26 @@ export default function Document(document) {
             </div>
           </div>
 
+          {document?.accepted && (
+            <div className="col-md-12 mb-2">
+              <select
+                className="form-control"
+                onChange={(e) => {
+                  selectedCollection(document.id, Number.parseInt(e.target.value));
+                }}
+                value={document.collection?.id || 0}
+              >
+                <option value={0}>No Collection</option>
+                {collections.map((collection) => (
+                  <option key={collection.id} value={collection.id}>
+                    {collection.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+
           <div className="col-md-12 mb-2">
             <button
               className="btn btn-outline-info btn-block"
@@ -74,7 +94,7 @@ export default function Document(document) {
                     console.log(document);
                     toast.loading("Decrypting Document...", { id: toastId });
                     const data = secured
-                      ? await decryptDocument(doc, document.aesKey)
+                      ? await decryptDocument(doc, aesKey || document.aesKey)
                       : doc;
                     toast.loading("Previewing Document...", { id: toastId });
                     var file = new Blob([data], {
