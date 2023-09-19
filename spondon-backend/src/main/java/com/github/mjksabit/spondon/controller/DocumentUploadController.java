@@ -31,7 +31,7 @@ public class DocumentUploadController {
     @Autowired
     DocumentService documentService;
 
-    @JsonView(View.Public.class)
+    @JsonView(View.ExtendedPublic.class)
     @GetMapping(path = "/possible-owners")
     public ResponseEntity<?> getPossibleOwners(@RequestHeader("Authorization") String bearerToken) {
         String jwt = bearerToken.substring(7);

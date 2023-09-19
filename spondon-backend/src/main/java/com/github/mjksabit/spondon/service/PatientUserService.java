@@ -1,5 +1,6 @@
 package com.github.mjksabit.spondon.service;
 
+import com.github.mjksabit.spondon.model.Document;
 import com.github.mjksabit.spondon.model.PatientUser;
 import com.github.mjksabit.spondon.repository.PatientUserRepository;
 import org.json.JSONObject;

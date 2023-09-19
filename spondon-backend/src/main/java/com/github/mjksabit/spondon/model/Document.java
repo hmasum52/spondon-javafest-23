@@ -1,6 +1,7 @@
 package com.github.mjksabit.spondon.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,10 +36,12 @@ public class Document {
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationTime;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id", nullable = false)
     private PatientUser owner;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "uploader_id", nullable = false)
     private User uploader;
@@ -46,4 +49,6 @@ public class Document {
     @Column(nullable = false, length = 1025)
     private String aesKey;
 
+    @Column(nullable = false)
+    private boolean accepted = false;
 }

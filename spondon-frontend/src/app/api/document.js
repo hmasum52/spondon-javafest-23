@@ -6,3 +6,6 @@ export const getPossibleOwners = async () =>
 
 export const uploadDocument = async (document) =>
     axios.post(api_url("/document-upload/upload"), document).then(res => res.data);
+
+export const getOwnedDocuments = async (page) =>
+    axios.get(api_url(`/user/document/all?page=${page}`)).then(res => res.data);

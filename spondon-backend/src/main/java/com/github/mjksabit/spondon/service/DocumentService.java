@@ -8,6 +8,9 @@ import com.github.mjksabit.spondon.repository.PatientUserRepository;
 import com.github.mjksabit.spondon.repository.UserRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -27,6 +30,7 @@ public class DocumentService {
     public static final String DOCUMENT_ANONYMOUS_LATITUDE_KEY = "latitude";
     public static final String DOCUMENT_ANONYMOUS_LONGITUDE_KEY = "longitude";
 
+    public static final int PAGE_SIZE = 10;
 
     @Autowired
     DocumentRepository documentRepository;
@@ -59,8 +63,29 @@ public class DocumentService {
 
         document.setOwner(patientUserRepository.findPatientUserByUserUsernameIgnoreCase(owner));
         document.setUploader(userRepository.findUserByUsernameIgnoreCase(uploader));
+        document.setAccepted(owner.equalsIgnoreCase(uploader));
         documentRepository.save(document);
     }
 
+    public Slice<Document> getOwnedDocuments(String username, int page) {
+        return documentRepository.findAllByOwnerUserUsernameIgnoreCaseAndAccepted(
+                username, true,
+                PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending())
+        );
+    }
+
+    public Slice<Document> getPendingDocuments(String username, int page) {
+        return documentRepository.findAllByOwnerUserUsernameIgnoreCaseAndAccepted(
+                username, false,
+                PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending())
+        );
+    }
+
+    public Slice<Document> getUploadedDocuments(String username, int page) {
+        return documentRepository.findAllByUploaderUsernameIgnoreCase(
+                username,
+                PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending())
+        );
+    }
 
 }

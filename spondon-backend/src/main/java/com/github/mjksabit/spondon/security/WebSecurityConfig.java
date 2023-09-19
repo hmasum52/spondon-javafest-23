@@ -54,9 +54,9 @@ public class WebSecurityConfig {
         http.csrf().disable().cors().and()
                 .authorizeRequests()
                 .antMatchers(path("/auth/**"), path("/verify")).permitAll()
-                .antMatchers(path("/admin/**"), path("/admin")).hasRole(
+                .antMatchers(path("/api/v1/admin/**"), path("/api/v1/admin")).hasRole(
                         AuthService.ROLE_ADMIN
-                ).antMatchers(path("/user/**"), path("/user")).hasRole(
+                ).antMatchers(path("/api/v1/user/**"), path("/api/v1/user")).hasRole(
                         AuthService.ROLE_USER
                 ).antMatchers(path("/api/v1/security/**")).hasAnyRole(
                         AuthService.ROLE_USER,

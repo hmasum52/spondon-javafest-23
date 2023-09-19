@@ -3,7 +3,7 @@ import { Form, ProgressBar, Table } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { FileUploader } from "react-drag-drop-files";
 import { v4 as uuidv4 } from "uuid";
-import { aesGcmDecrypt, aesGcmEncrypt } from "./aes-gcm";
+import { aesEncrypt, aesGcmDecrypt, aesGcmEncrypt } from "./aes-gcm";
 import {
   decryptPassword,
   encryptPassword,
@@ -16,6 +16,7 @@ import { getIpLocation } from "../api/external";
 import { storage } from "../firebase-config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import toast from "react-hot-toast";
+import { decryptDocument } from "../user/Document";
 
 const generateRandomPassword = () => {
   let chars =
@@ -35,7 +36,7 @@ const initialState = {
   name: "",
   summary: "",
   hash: "",
-  type: "",
+  type: "Others",
   url: "",
   owner: null,
   creationDate: "",
@@ -110,7 +111,8 @@ export default function UploadDocument() {
       const toastId = toast.loading("Encrypting document...");
       const reader = new FileReader();
       reader.onload = async (e) => {
-        const encrypted = await aesGcmEncrypt(reader.result, aesKey);
+        // To byte array
+        const encrypted = await aesEncrypt(reader.result, aesKey);
         const encryptedFile = new File(
           [new Blob([encrypted], { type: "text/plain" })],
           file.name,
@@ -132,6 +134,17 @@ export default function UploadDocument() {
 
   const uploadFile = async (e) => {
     e.preventDefault();
+
+    if (!fileDetails.file) {
+      toast.error("Please select a file to upload!");
+      return;
+    }
+
+    if (!fileDetails.owner) {
+      toast.error("Please select a owner for the document!");
+      return;
+    }  
+
     const documentId = uuidv4();
     let {
       name,
@@ -155,8 +168,7 @@ export default function UploadDocument() {
       console.log("publicKey: ", publicKey);
       aesKey = await encryptPassword(password, publicKey);
       console.log("aesKey: ", aesKey);
-
-      file = await encryptFile(file, aesKey);
+      file = await encryptFile(file, password);
     }
     
     await uploadToFirebase(documentId, file);

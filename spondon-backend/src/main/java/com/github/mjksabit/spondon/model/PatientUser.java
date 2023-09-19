@@ -1,5 +1,6 @@
 package com.github.mjksabit.spondon.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.mjksabit.spondon.consts.View;
 import lombok.*;
@@ -19,7 +20,7 @@ public class PatientUser implements Serializable {
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonView(View.Public.class)
+    @JsonView(View.ExtendedPublic.class)
     @Column(nullable = false, unique = true)
     private long birthCertificateNumber;
 
@@ -27,12 +28,12 @@ public class PatientUser implements Serializable {
     @Column(nullable = false)
     private String name;
 
-    @JsonView(View.Public.class)
+    @JsonView(View.ExtendedPublic.class)
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
 
-    @JsonView(View.Public.class)
+    @JsonView(View.ExtendedPublic.class)
     @Column(nullable = false)
     private String bloodGroup = "";
 
@@ -44,6 +45,7 @@ public class PatientUser implements Serializable {
     @Column(nullable = false)
     private String about = "";
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id", unique = true)
     private User user;
