@@ -15,3 +15,6 @@ export const forgetPassword = async (email) =>
 
 export const resetPassword = async (jwt, password) =>
     axios.post(api_url("/auth/forgot-reset"), { jwt, password }).then(res => res.data);
+
+export const registerDoctor = async (jwt, userInfo) =>
+    axios.post(api_url("/auth/add-doctor"), {jwt, ...userInfo}).then(res => res.data);

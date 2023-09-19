@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+import static com.github.mjksabit.spondon.service.AuthService.ROLE_DOCTOR;
+import static com.github.mjksabit.spondon.service.AuthService.ROLE_HOSPITAL;
+
 @Service
 public class UserService {
 
@@ -109,5 +114,11 @@ public class UserService {
 
     public String getRole(String username) {
         return userRepository.findUserByUsernameIgnoreCase(username).getRole();
+    }
+
+    public List<User> getDoctorsAndHospital() {
+        List<User> doctorsAndHospitals = userRepository.findAllByRole(ROLE_DOCTOR);
+        doctorsAndHospitals.addAll(userRepository.findAllByRole(ROLE_HOSPITAL));
+        return doctorsAndHospitals;
     }
 }

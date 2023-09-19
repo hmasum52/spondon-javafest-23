@@ -6,6 +6,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
@@ -16,4 +18,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
     Slice<User> findUserByActiveAndBannedAndRole(boolean active, boolean banned, String role, Pageable pageable);
 
     User findUserByEmailIgnoreCase(String email);
+
+    List<User> findAllByRole(String role);
 }

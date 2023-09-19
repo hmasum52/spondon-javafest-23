@@ -12,6 +12,7 @@ import {
 import { Badge } from "react-bootstrap";
 import Document from "./Document";
 import toast from "react-hot-toast";
+import ListDocuments from "./ListDocuments";
 
 export function useQuery() {
   const { search, location } = useLocation();
@@ -21,7 +22,6 @@ export function useQuery() {
 export default function OwnedDocuments() {
   const [query, location] = useQuery();
   const page = (Number.parseInt(query.get("page")) || 1) - 1;
-  const history = useHistory();
 
   const [documents, setDocuments] = useState([]);
   const [collections, setCollections] = useState([]);
@@ -30,11 +30,18 @@ export default function OwnedDocuments() {
 
   useEffect(() => {
     (async () => {
-      getOwnedDocuments(page).then((res) => {
-        setDocuments(res.content);
-        setFirst(res.first);
-        setLast(res.last);
-      });
+      toast.promise(
+        getOwnedDocuments(page).then((res) => {
+          setDocuments(res.content);
+          setFirst(res.first);
+          setLast(res.last);
+        }),
+        {
+          loading: "Loading documents",
+          success: "Loaded documents",
+          error: "Failed loading documents",
+        }
+      );
     })();
   }, [page]);
 
@@ -43,22 +50,6 @@ export default function OwnedDocuments() {
       setCollections(res);
     });
   }, []);
-
-  const selectedCollection = (documentId, collectionId) => {
-    toast.promise(
-      setToCollection(documentId, collectionId).then((res) => {
-        const collection = collections.find((c) => c.id === collectionId) || null;
-        setDocuments(
-          documents.map((d) => (d.id === documentId ? { ...d, collection } : d))
-        );
-      }),
-      {
-        loading: "Saving to collection",
-        success: "Seved to collection",
-        error: "Failed saving to collection",
-      }
-    );
-  };
 
   return (
     <div>
@@ -78,41 +69,14 @@ export default function OwnedDocuments() {
         </nav>
       </div>
 
-      <div className="row">
-        {documents.map((document) => (
-          <Document
-            key={document.id}
-            document={document}
-            collections={collections}
-            selectedCollection={selectedCollection}
-          />
-        ))}
-      </div>
-
-      <div className="row">
-        <div className="col-md-6">
-          <button
-            className="btn btn-outline-primary btn-block"
-            disabled={first}
-            onClick={() => {
-              history.push({ search: `?page=${page}` });
-            }}
-          >
-            Previous
-          </button>
-        </div>
-        <div className="col-md-6">
-          <button
-            className="btn btn-outline-primary btn-block"
-            disabled={last}
-            onClick={() => {
-              history.push({ search: `?page=${page + 2}` });
-            }}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+      <ListDocuments
+        documents={documents}
+        collections={collections}
+        setDocuments={setDocuments}
+        first={first}
+        last={last}
+        page={page}
+      />
     </div>
   );
 }

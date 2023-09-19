@@ -1,5 +1,6 @@
 package com.github.mjksabit.spondon.service;
 
+import com.github.mjksabit.spondon.model.DoctorUser;
 import com.github.mjksabit.spondon.model.PatientUser;
 import com.github.mjksabit.spondon.model.User;
 import com.github.mjksabit.spondon.util.JwtTokenUtil;
@@ -40,6 +41,7 @@ public class AuthService {
 
     public static final String VERIFY_ACTIVATE      = "activate";
     public static final String VERIFY_FORGOT        = "forgot";
+    public static final String VERIFY_ADD_DOCTOR    = "add-doctor";
 
     public static final Pattern USERNAME_MATCHER = Pattern.compile(
             "^[A-Za-z]\\w{4,29}$"
@@ -73,6 +75,9 @@ public class AuthService {
 
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    DoctorUserService doctorUserService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -186,6 +191,48 @@ public class AuthService {
         User user = userService.findByUsername(username);
         user.setPassword(password);
         userService.saveWithRawPassword(user);
+        return true;
+    }
+
+    public boolean addDoctorRequest(String email) {
+        User user = userService.findByEmail(email);
+        if (user != null)
+            return false;
+
+        String jwtVerification = jwtTokenUtil.generateVerifyToken(
+                email, email, VERIFY_ADD_DOCTOR);
+        emailService.sendEmail(
+                Collections.singletonList(email),
+                "Confirm Doctor Account",
+                "Go to the link below to activate your Spondon Doctor Account \n" +
+                        "[Sorry for <"+FRONTEND_URL+">, I was blocked and site was flagged not safe]\n"+
+                        FRONTEND_URL+"/auth/doctor/"+jwtVerification
+        );
+        return true;
+    }
+
+    public boolean activateDoctor(JSONObject object) {
+        String jwtVerify = object.getString(JWT_KEY);
+        String email = jwtTokenUtil.validateAndGetUsernameFromToken(jwtVerify, VERIFY_ADD_DOCTOR);
+
+        if (email == null)
+            return false;
+
+        object.put(EMAIL_KEY, email);
+        User user = userService.retrieveUser(new User(), object);
+        user.setActive(true);
+        user.setPublicKey(object.getString("publicKey"));
+        userService.saveWithRawPassword(user, ROLE_DOCTOR);
+
+        try {
+            DoctorUser doctorUser = doctorUserService.retrieve(new DoctorUser(), object);
+            doctorUser.setId(user.getId());
+            doctorUserService.save(doctorUser);
+        } catch (Exception e) {
+            logger.log(Level.ERROR, "Doctor Activation Failed: {}", e.getMessage());
+            return false;
+        }
+
         return true;
     }
 }

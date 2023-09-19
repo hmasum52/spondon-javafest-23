@@ -11,6 +11,7 @@ const Login = lazy(() => import("./user-pages/Login"));
 const Register = lazy(() => import("./user-pages/Register"));
 const ForgetPassword = lazy(() => import("./user-pages/ForgetPassword"));
 const Activate = lazy(() => import("./user-pages/Activate"));
+const ActivateDoctor = lazy(() => import("./user-pages/RegisterDoctor"));
 
 const SecuritySettings = lazy(() => import("./common/SecuritySettings"));
 
@@ -18,6 +19,10 @@ const UserHome = lazy(() => import("./user/Dashboard"));
 const AddDocument = lazy(() => import("./common/UploadDocument"));
 const ViewDocuments = lazy(() => import("./user/OwnedDocuments"));
 const PendingDocuments = lazy(() => import("./user/NotAcceptedDocuments"));
+const Collections = lazy(() => import("./user/Collections"));
+
+const AdminHome = lazy(() => import("./admin/Dashboard"));
+const AddDoctor = lazy(() => import("./admin/AddDoctor"));
 
 export default function AppRoutes() {
   const { user } = useContext(UserContext);
@@ -35,9 +40,20 @@ export default function AppRoutes() {
                 <Route path="/user/documents/add" component={AddDocument} />
                 <Route path="/user/documents/view" component={ViewDocuments} />
                 <Route path="/user/documents/accept" component={PendingDocuments} />
+                <Route path="/user/collections" component={Collections} exact />
+                <Route path="/user/collections/:id" component={Collections} />
                 <Redirect to="/user/dashboard" />
               </Switch>
             )}
+
+            {user?.role === "ROLE_ADMIN" && (
+              <Switch>
+                <Route path="/admin/dashboard" component={AdminHome} />
+                <Route path="/admin/add-doctor" component={AddDoctor} />
+                <Redirect to="/admin/dashboard" />
+              </Switch>
+            )}
+
           </Switch>
         )}
 
@@ -47,6 +63,7 @@ export default function AppRoutes() {
             <Route path="/auth/register" component={Register} />
             <Route path="/auth/forget-password" component={ForgetPassword} />
             <Route path="/auth/activate/:token" component={Activate} />
+            <Route path="/auth/doctor/:token" component={ActivateDoctor} />
             <Redirect to="/auth/login" />
           </Switch>
         )}

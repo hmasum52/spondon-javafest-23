@@ -13,6 +13,7 @@ import { FORBIDDEN, UNAUTHORIZED } from "./api";
 import { Toaster, toast } from "react-hot-toast";
 import { isCursorAtEnd } from "@testing-library/user-event/dist/utils";
 import UserSidebar from "./user/UserSidebar";
+import AdminSidebar from "./admin/AdminSidebar";
 
 export const UserContext = createContext({
   user: undefined,
@@ -96,9 +97,16 @@ function App() {
 
   let navbarComponent = !isFullPageLayout ? <Navbar /> : "";
   let sidebarComponent = !isFullPageLayout ? (
-    user?.role === "ROLE_USER" ? 
-  <UserSidebar /> : <Sidebar />
-  ) : "";
+    user?.role === "ROLE_USER" ? (
+      <UserSidebar />
+    ) : user?.role === "ROLE_ADMIN" ? (
+      <AdminSidebar />
+    ) : (
+      <Sidebar />
+    )
+  ) : (
+    ""
+  );
   let SettingsPanelComponent = !isFullPageLayout ? <SettingsPanel /> : "";
   let footerComponent = !isFullPageLayout ? <Footer /> : "";
 

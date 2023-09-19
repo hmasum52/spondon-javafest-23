@@ -71,4 +71,13 @@ public class AuthController {
         else
             return ResponseEntity.badRequest().build();
     }
+
+    @PostMapping(path = "/add-doctor")
+    public ResponseEntity<?> addDoctor(@RequestBody String requestString) {
+        JSONObject request = new JSONObject(requestString);
+        if (authService.activateDoctor(request))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().build();
+    }
 }

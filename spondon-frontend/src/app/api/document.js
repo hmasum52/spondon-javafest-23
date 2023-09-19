@@ -31,3 +31,23 @@ export const setToCollection = async (documentId, collectionId) =>
       id: collectionId,
     })
     .then((res) => res.data);
+
+export const addCollection = async (name) =>
+  axios
+    .post(api_url(`/user/document/collection`), { name })
+    .then((res) => res.data);
+
+export const editCollection = async (id, name) =>
+  axios
+    .put(api_url(`/user/document/collection/${id}`), { name })
+    .then((res) => res.data);
+
+export const deleteCollection = async (id) =>
+  axios
+    .delete(api_url(`/user/document/collection/${id}`))
+    .then((res) => res.data);
+
+export const getCollectionDocuments = async (id, page) =>
+  axios
+    .get(api_url(`/user/document/collection/${id}?page=${page}`))
+    .then((res) => res.data);

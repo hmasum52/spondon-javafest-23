@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(username);
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(username)
+                .username(user.getUsername())
                 .password(user.getPassword())
                 .authorities(user.getRole())
                 .disabled(user.getBanned())
