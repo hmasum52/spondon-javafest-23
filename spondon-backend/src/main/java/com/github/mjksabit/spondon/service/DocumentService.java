@@ -1,9 +1,8 @@
 package com.github.mjksabit.spondon.service;
 
-import com.github.mjksabit.spondon.model.AnonymousData;
-import com.github.mjksabit.spondon.model.Document;
-import com.github.mjksabit.spondon.model.DocumentCollection;
+import com.github.mjksabit.spondon.model.*;
 import com.github.mjksabit.spondon.repository.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -11,8 +10,11 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
+
+import static com.github.mjksabit.spondon.service.AuthService.ROLE_DOCTOR;
 
 @Service
 public class DocumentService {
@@ -45,6 +47,9 @@ public class DocumentService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ShareRepository shareRepository;
 
     public void saveDocument(JSONObject data, String owner, String uploader) {
         Document document = new Document();
@@ -151,5 +156,31 @@ public class DocumentService {
                 username, username, id,
                 PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending())
         );
+    }
+
+    @Transactional
+    public void shareDocument(String owner, JSONArray listOfShare, long doctorUserId) throws Exception {
+        User doctorUser = userRepository.findById(doctorUserId).orElseThrow();
+        if (!doctorUser.getRole().equals(ROLE_DOCTOR))
+            throw new Exception("User is not a Doctor");
+
+        for (int i = 0; i < listOfShare.length(); i++) {
+            JSONObject object = listOfShare.getJSONObject(i);
+            long id = object.getLong("id");
+            Document document = documentRepository.findById(id).orElseThrow();
+
+            if (!document.getOwner().getUser().getUsername().equalsIgnoreCase(owner))
+                throw new Exception("You are not the owner of the document");
+
+            if (shareRepository.existsByDocumentIdAndSharedToId(id, doctorUserId))
+                continue;
+
+            SharedDocument sharedDocument = new SharedDocument();
+            sharedDocument.setDocument(document);
+            sharedDocument.setSharedTo(doctorUser);
+            sharedDocument.setAesKey(object.getString("aesKey"));
+            sharedDocument.setShareTime(new Date());
+            shareRepository.save(sharedDocument);
+        }
     }
 }

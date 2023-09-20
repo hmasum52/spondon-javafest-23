@@ -1,6 +1,8 @@
 package com.github.mjksabit.spondon.service;
 
+import com.github.mjksabit.spondon.model.DoctorUser;
 import com.github.mjksabit.spondon.model.User;
+import com.github.mjksabit.spondon.repository.DoctorUserRepository;
 import com.github.mjksabit.spondon.repository.UserRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private DoctorUserRepository doctorUserRepository;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -116,9 +121,7 @@ public class UserService {
         return userRepository.findUserByUsernameIgnoreCase(username).getRole();
     }
 
-    public List<User> getDoctorsAndHospital() {
-        List<User> doctorsAndHospitals = userRepository.findAllByRole(ROLE_DOCTOR);
-        doctorsAndHospitals.addAll(userRepository.findAllByRole(ROLE_HOSPITAL));
-        return doctorsAndHospitals;
+    public List<DoctorUser> getDoctors() {
+        return doctorUserRepository.findAll();
     }
 }

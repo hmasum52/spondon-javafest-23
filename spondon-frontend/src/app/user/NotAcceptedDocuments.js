@@ -8,7 +8,7 @@ import { getNotAcceptedDocuments, getOwnedDocuments } from "../api/document";
 import { Badge } from "react-bootstrap";
 import Document from "./Document";
 import { useQuery } from "./OwnedDocuments";
-
+import ListDocuments from "./ListDocuments";
 
 export default function PendingDocuments() {
   const [query, location] = useQuery();
@@ -47,36 +47,14 @@ export default function PendingDocuments() {
         </nav>
       </div>
 
-      <div className="row">
-        {documents.map((document) => (
-          <Document key={document.id} {...document} />
-        ))}
-      </div>
-
-      <div className="row">
-        <div className="col-md-6">
-          <button
-            className="btn btn-outline-primary btn-block"
-            disabled={first}
-            onClick={() => {
-              history.push({ search: `?page=${page}` });
-            }}
-          >
-            Previous
-          </button>
-        </div>
-        <div className="col-md-6">
-          <button
-            className="btn btn-outline-primary btn-block"
-            disabled={last}
-            onClick={() => {
-              history.push({ search: `?page=${page + 2}` });
-            }}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+      <ListDocuments
+        documents={documents}
+        collections={[]}
+        setDocuments={setDocuments}
+        first={first}
+        last={last}
+        page={page}
+      />
     </div>
   );
 }

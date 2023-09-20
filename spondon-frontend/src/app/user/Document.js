@@ -7,6 +7,7 @@ import { aesDecrypt, aesGcmDecrypt } from "../common/aes-gcm";
 import toast from "react-hot-toast";
 import { acceptDocument } from "../api/document";
 import { useState } from "react";
+import ShareModal from "./ShareModal";
 
 export async function downloadFromFirebase(documentId) {
   const storageRef = ref(storage, `documents/${documentId}`);
@@ -28,9 +29,16 @@ export async function decryptDocument(document, aesKey) {
   return decryptedDocument;
 }
 
-export default function Document({document, collections = [], selectedCollection = (d,c) => {}, aesKey}) {
+export default function Document({
+  document,
+  collections = [],
+  selectedCollection = (d, c) => {},
+  aesKey,
+}) {
   const secured = document.aesKey;
   const [accepted, setAccepted] = useState(document?.accepted);
+  const [showShareModal, setShowShareModal] = useState(false);
+
   return (
     <div className="col-md-6 grid-margin stretch-card">
       <div className="card">
@@ -67,7 +75,10 @@ export default function Document({document, collections = [], selectedCollection
               <select
                 className="form-control"
                 onChange={(e) => {
-                  selectedCollection(document.id, Number.parseInt(e.target.value));
+                  selectedCollection(
+                    document.id,
+                    Number.parseInt(e.target.value)
+                  );
                 }}
                 value={document.collection?.id || 0}
               >
@@ -80,7 +91,6 @@ export default function Document({document, collections = [], selectedCollection
               </select>
             </div>
           )}
-
 
           <div className="col-md-12 mb-2">
             <button
@@ -142,13 +152,21 @@ export default function Document({document, collections = [], selectedCollection
             </div>
           ) : (
             <div className="col-md-12">
-              <button className="btn btn-primary btn-block">
+              <button
+                className="btn btn-primary btn-block"
+                onClick={() => setShowShareModal(true)}
+              >
                 Share Document
               </button>
             </div>
           )}
         </div>
       </div>
+      <ShareModal
+        documents={[document]}
+        show={showShareModal}
+        setShow={setShowShareModal}
+      />
     </div>
   );
 }

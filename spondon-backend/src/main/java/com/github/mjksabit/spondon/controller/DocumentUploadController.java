@@ -67,7 +67,7 @@ public class DocumentUploadController {
     }
 
     @GetMapping(path = "/sharable-users")
-    public ResponseEntity<?> getDoctorAndHospitals() {
-        return ResponseEntity.ok(userService.getDoctorsAndHospital());
+    public ResponseEntity<?> getDoctors() {
+        return ResponseEntity.ok(userService.getDoctors());
     }
 }

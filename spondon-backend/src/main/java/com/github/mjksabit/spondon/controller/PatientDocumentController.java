@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.github.mjksabit.spondon.consts.View;
 import com.github.mjksabit.spondon.service.DocumentService;
 import com.github.mjksabit.spondon.util.JwtTokenUtil;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -108,5 +109,20 @@ public class PatientDocumentController {
         String jwt = bearerToken.substring(7);
         String username = jwtTokenUtil.getUsernameFromToken(jwt);
         return ResponseEntity.ok(documentService.getCollectionDocuments(username, id, page));
+    }
+
+    @PostMapping(path = "/share/{id}")
+    public ResponseEntity<?> shareDocument(@RequestHeader("Authorization") String bearerToken,
+                                           @PathVariable long id,
+                                           @RequestBody String requestString) {
+        String jwt = bearerToken.substring(7);
+        String username = jwtTokenUtil.getUsernameFromToken(jwt);
+        JSONArray listOfShare = new JSONArray(requestString);
+        try {
+            documentService.shareDocument(username, listOfShare, id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

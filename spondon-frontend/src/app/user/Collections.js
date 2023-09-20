@@ -14,6 +14,7 @@ import {
 import { ListGroup, Modal } from "react-bootstrap";
 import { useQuery } from "./OwnedDocuments";
 import ListDocuments from "./ListDocuments";
+import ShareModal from "./ShareModal";
 
 export default function Collections() {
   const [collections, setCollections] = useState([]);
@@ -27,6 +28,8 @@ export default function Collections() {
 
   const [first, setFirst] = useState(true);
   const [last, setLast] = useState(true);
+
+  const [share, setShare] = useState(false);
 
   useEffect(() => {
     toast.promise(
@@ -206,9 +209,11 @@ export default function Collections() {
                       </button>
                     </div>
                     <div className="">
-                    <button
+                      <button
                         className="btn btn-dark btn-icon my-auto"
-                        onClick={() => {}}
+                        onClick={() => {
+                          setShare(true);
+                        }}
                       >
                         <i className="mdi mdi-share"></i>
                       </button>
@@ -268,6 +273,8 @@ export default function Collections() {
                 </button>
               </Modal.Footer>
             </Modal>
+
+            <ShareModal documents={documents} show={share} setShow={setShare} />
           </div>
         )}
       </div>
