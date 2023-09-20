@@ -12,11 +12,20 @@ import {
 import { save } from "./download";
 import { getHash } from "./sha256";
 import { getPossibleOwners, uploadDocument } from "../api/document";
-import { getIpLocation } from "../api/external";
+import {
+  getIpLocation,
+  questionToChatPdf,
+  removeFromChatPdf,
+  uploadToChatPdf,
+} from "../api/external";
 import { storage } from "../firebase-config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import toast from "react-hot-toast";
 import { decryptDocument } from "../user/Document";
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 const generateRandomPassword = () => {
   let chars =
@@ -143,7 +152,7 @@ export default function UploadDocument() {
     if (!fileDetails.owner) {
       toast.error("Please select a owner for the document!");
       return;
-    }  
+    }
 
     const documentId = uuidv4();
     let {
@@ -160,7 +169,7 @@ export default function UploadDocument() {
     } = fileDetails;
 
     let aesKey = "";
-    
+
     if (encryption && owner?.user.publicKey) {
       const password = generateRandomPassword();
       console.log("password: ", password);
@@ -170,7 +179,7 @@ export default function UploadDocument() {
       console.log("aesKey: ", aesKey);
       file = await encryptFile(file, password);
     }
-    
+
     await uploadToFirebase(documentId, file);
 
     owner = owner?.user?.username;
@@ -236,6 +245,38 @@ export default function UploadDocument() {
                             creationDate: file.lastModifiedDate.getTime(),
                             hash: hash,
                           });
+                          toast.promise(
+                            new Promise((resolve, reject) => {
+                              (async () => {
+                                const sourceId = await uploadToChatPdf(file);
+                                console.log("sourceId: ", sourceId);
+                                // await delay(5000);
+                                // console.log("delayed");
+                                const about = await questionToChatPdf(
+                                  sourceId,
+                                  "What is this medical document about?"
+                                );
+                                console.log("about: ", about);
+                                setFileDetails({
+                                  ...fileDetails,
+                                  summary: about,
+                                });
+                                resolve("Document analyzed successfully!");
+                                removeFromChatPdf(sourceId);
+                              })().catch((e) => {
+                                console.log(e);
+                                reject(e);
+                              });
+                            }),
+                            {
+                              loading: "Analyzing document...",
+                              success: "Document analyzed successfully!",
+                              error: (e) => {
+                                console.log(e);
+                                return "Document analysis failed!";
+                              },
+                            }
+                          );
                         })();
                       }}
                       name="file"

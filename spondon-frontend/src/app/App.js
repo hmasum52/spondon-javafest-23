@@ -9,7 +9,7 @@ import SettingsPanel from "./shared/SettingsPanel";
 import Footer from "./shared/Footer";
 import "./App.css";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
-import { FORBIDDEN, UNAUTHORIZED } from "./api";
+import { BASE_URL, FORBIDDEN, UNAUTHORIZED } from "./api";
 import { Toaster, toast } from "react-hot-toast";
 import { isCursorAtEnd } from "@testing-library/user-event/dist/utils";
 import UserSidebar from "./user/UserSidebar";
@@ -55,6 +55,8 @@ function App() {
   axios.interceptors.response.use(
     (response) => response,
     (error) => {
+      console.log("error: ", error);
+      if (!error?.request?.responseURL?.includes(BASE_URL)) return Promise.reject(error);
       const status = error?.response?.status;
 
       if (status === UNAUTHORIZED || status === FORBIDDEN) {
