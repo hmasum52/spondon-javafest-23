@@ -14,6 +14,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { isCursorAtEnd } from "@testing-library/user-event/dist/utils";
 import UserSidebar from "./user/UserSidebar";
 import AdminSidebar from "./admin/AdminSidebar";
+import DoctorSidebar from "./doctor/DoctorSidebar";
 
 export const UserContext = createContext({
   user: undefined,
@@ -56,7 +57,8 @@ function App() {
     (response) => response,
     (error) => {
       console.log("error: ", error);
-      if (!error?.request?.responseURL?.includes(BASE_URL)) return Promise.reject(error);
+      if (!error?.request?.responseURL?.includes(BASE_URL))
+        return Promise.reject(error);
       const status = error?.response?.status;
 
       if (status === UNAUTHORIZED || status === FORBIDDEN) {
@@ -103,6 +105,8 @@ function App() {
       <UserSidebar />
     ) : user?.role === "ROLE_ADMIN" ? (
       <AdminSidebar />
+    ) : user?.role === "ROLE_DOCTOR" ? (
+      <DoctorSidebar />
     ) : (
       <Sidebar />
     )

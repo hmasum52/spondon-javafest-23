@@ -2,17 +2,16 @@ import { api_url } from ".";
 import axios from "axios";
 
 export const getPossibleOwners = async () =>
-  axios
-    .get(api_url("/document-upload/possible-owners"))
-    .then((res) => res.data);
+  axios.get(api_url("/common/possible-owners")).then((res) => res.data);
 
 export const uploadDocument = async (document) =>
-  axios
-    .post(api_url("/document-upload/upload"), document)
-    .then((res) => res.data);
+  axios.post(api_url("/common/upload"), document).then((res) => res.data);
 
 export const getPossibleDoctors = async () =>
-  axios.get(api_url("/document-upload/sharable-users")).then((res) => res.data);
+  axios.get(api_url("/common/sharable-users")).then((res) => res.data);
+
+export const revokeAccess = async (shareId) =>
+  axios.delete(api_url(`/common/revoke/${shareId}`));
 
 export const getOwnedDocuments = async (page) =>
   axios.get(api_url(`/user/document/all?page=${page}`)).then((res) => res.data);

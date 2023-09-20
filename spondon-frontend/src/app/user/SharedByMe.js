@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "./OwnedDocuments";
 import toast from "react-hot-toast";
-import { getSharedDocuments } from "../api/document";
+import { getSharedDocuments, revokeAccess } from "../api/document";
 import { Modal, OverlayTrigger, Popover, Tooltip } from "react-bootstrap";
 import Document from "./Document";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
@@ -66,30 +66,30 @@ export default function SharedByMe() {
                 <table className="table">
                   <thead>
                     <tr>
-                      <th> Share Date </th>
                       <th> Document Name </th>
                       <th> Document Type </th>
-                      <th> Creation Date </th>
+                      {/* <th> Creation Date </th> */}
                       <th> Upload Date </th>
-                      <th> Uploaded By </th>
+                      {/* <th> Uploaded By </th> */}
                       <th> Security </th>
                       <th> Collection </th>
+                      <th> Shared To </th>
+                      <th> Share Date </th>
+                      <th> Revoke </th>
                       <th> Actions </th>
                     </tr>
                   </thead>
                   <tbody>
                     {documents.map((share) => (
                       <tr key={share.id}>
-                        <td>{formatDateFromTimestamp(share.shareTime)}</td>
                         <td>{share.document.name}</td>
                         <td>{share.document.type}</td>
-                        <td>
+                        {/* <td>
                           {formatDateFromTimestamp(share.document.creationTime)}
-                        </td>
+                        </td> */}
                         <td>
                           {formatDateFromTimestamp(share.document.uploadTime)}
                         </td>
-                        <td>{share.document.uploader?.username}</td>
                         <td>
                           {share.aesKey ? (
                             <label className="badge badge-gradient-success">
@@ -102,6 +102,41 @@ export default function SharedByMe() {
                           )}
                         </td>
                         <td>{share.document.collection?.name}</td>
+                        <td>{share.sharedTo.username}</td>
+                        <td>{formatDateFromTimestamp(share.shareTime)}</td>
+                        <td>
+                          {share.revokeTime ? (
+                            <label className="badge badge-gradient-danger">
+                              {formatDateFromTimestamp(share.revokeTime)}
+                            </label>
+                          ) : (
+                            <button
+                              className="btn btn-outline-danger btn-rounded btn-icon"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                toast.promise(
+                                  revokeAccess(share.id).then((res) => {
+                                    setDocuments(
+                                      documents.map((d) => {
+                                        if (d.id === share.id)
+                                          d.revokeTime = new Date().getTime();
+                                        return d;
+                                      })
+                                    );
+                                  }),
+                                  {
+                                    loading: "Revoking access",
+                                    success: "Revoked access",
+                                    error: "Failed revoking access",
+                                  }
+                                );
+                              }}
+                            >
+                              {" "}
+                              <i className="mdi mdi-close"></i>{" "}
+                            </button>
+                          )}
+                        </td>
                         <td>
                           <button
                             className="btn btn-outline-secondary btn-rounded btn-icon"

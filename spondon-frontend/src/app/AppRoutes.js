@@ -25,9 +25,11 @@ const SharedByMe = lazy(() => import("./user/SharedByMe"));
 const AdminHome = lazy(() => import("./admin/Dashboard"));
 const AddDoctor = lazy(() => import("./admin/AddDoctor"));
 
+const DoctorHome = lazy(() => import("./doctor/Dashboard"));
+
 export default function AppRoutes() {
   const { user } = useContext(UserContext);
-  
+
   return (
     <Suspense fallback={<Spinner />}>
       <Switch>
@@ -40,7 +42,10 @@ export default function AppRoutes() {
                 <Route path="/user/dashboard" component={UserHome} />
                 <Route path="/user/documents/add" component={AddDocument} />
                 <Route path="/user/documents/view" component={ViewDocuments} />
-                <Route path="/user/documents/accept" component={PendingDocuments} />
+                <Route
+                  path="/user/documents/accept"
+                  component={PendingDocuments}
+                />
                 <Route path="/user/collections" component={Collections} exact />
                 <Route path="/user/collections/:id" component={Collections} />
                 <Route path="/user/shared" component={SharedByMe} />
@@ -56,6 +61,13 @@ export default function AppRoutes() {
               </Switch>
             )}
 
+            {user?.role === "ROLE_DOCTOR" && (
+              <Switch>
+                <Route path="/doctor/dashboard" component={DoctorHome} />
+                <Route path="/doctor/documents/add" component={AddDocument} />
+                <Redirect to="/doctor/dashboard" />
+              </Switch>
+            )}
           </Switch>
         )}
 

@@ -1,5 +1,6 @@
 package com.github.mjksabit.spondon.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
@@ -28,6 +29,11 @@ public class SharedDocument {
     @JoinColumn(name = "shared_to_id")
     private User sharedTo;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "shared_by_id")
+    private User sharedBy;
+
     @Column(nullable = false, length = 1025)
     private String aesKey;
 
@@ -39,4 +45,8 @@ public class SharedDocument {
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date shareTime = new Date();
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date revokeTime;
 }

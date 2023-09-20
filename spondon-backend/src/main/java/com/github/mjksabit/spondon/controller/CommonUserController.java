@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("/api/v1/document-upload")
-public class DocumentUploadController {
+@RequestMapping("/api/v1/common")
+public class CommonUserController {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     @Autowired
@@ -69,5 +69,19 @@ public class DocumentUploadController {
     @GetMapping(path = "/sharable-users")
     public ResponseEntity<?> getDoctors() {
         return ResponseEntity.ok(userService.getDoctors());
+    }
+
+    @DeleteMapping(path = "/revoke/{id}")
+    public ResponseEntity<?> revokeDocument(@RequestHeader("Authorization") String bearerToken,
+                                            @PathVariable long id) {
+        String jwt = bearerToken.substring(7);
+        String username = jwtTokenUtil.getUsernameFromToken(jwt);
+        try {
+            documentService.revokeDocument(username, id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.warning(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

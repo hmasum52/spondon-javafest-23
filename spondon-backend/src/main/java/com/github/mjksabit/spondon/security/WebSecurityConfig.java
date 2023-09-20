@@ -56,6 +56,8 @@ public class WebSecurityConfig {
                 .antMatchers(path("/auth/**"), path("/verify")).permitAll()
                 .antMatchers(path("/api/v1/admin/**"), path("/api/v1/admin")).hasRole(
                         AuthService.ROLE_ADMIN
+                ).antMatchers(path("/api/v1/doctor/**"), path("/api/v1/doctor")).hasRole(
+                        AuthService.ROLE_DOCTOR
                 ).antMatchers(path("/api/v1/user/**"), path("/api/v1/user")).hasRole(
                         AuthService.ROLE_USER
                 ).antMatchers(path("/api/v1/security/**")).hasAnyRole(
@@ -63,7 +65,7 @@ public class WebSecurityConfig {
                         AuthService.ROLE_DOCTOR,
                         AuthService.ROLE_HOSPITAL,
                         AuthService.ROLE_ADMIN
-                ).antMatchers(path("/api/v1/document-upload/**"), path("/api/v1/document-upload")).hasAnyRole(
+                ).antMatchers(path("/api/v1/common/**"), path("/api/v1/common")).hasAnyRole(
                         AuthService.ROLE_DOCTOR,
                         AuthService.ROLE_HOSPITAL,
                         AuthService.ROLE_USER

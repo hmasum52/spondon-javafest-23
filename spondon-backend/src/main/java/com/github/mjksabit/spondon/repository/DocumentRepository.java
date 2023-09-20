@@ -8,10 +8,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DocumentRepository extends PagingAndSortingRepository<Document, Long> {
-    Slice<Document> findAllByOwnerUserUsernameIgnoreCaseAndAccepted(String username, boolean accepted, Pageable pageable);
+    Slice<Document> findAllByOwnerUserUsernameAndAccepted(String username, boolean accepted, Pageable pageable);
 
-    Slice<Document> findAllByUploaderUsernameIgnoreCase(String username, Pageable pageable);
+    Slice<Document> findAllByUploaderUsername(String username, Pageable pageable);
 
-    Slice<Document> findAllByOwnerUserUsernameIgnoreCaseAndCollectionOwnerUsernameIgnoreCaseAndCollectionId(String username, String owner, long collectionId, Pageable pageable);
+    Slice<Document> findAllByOwnerUserUsernameAndCollectionOwnerUsernameAndCollectionId(
+            String username, String owner, long collectionId, Pageable pageable);
 
 }

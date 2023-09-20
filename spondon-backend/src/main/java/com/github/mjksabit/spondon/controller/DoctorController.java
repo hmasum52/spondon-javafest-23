@@ -1,7 +1,6 @@
 package com.github.mjksabit.spondon.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.github.mjksabit.spondon.consts.View;
+import com.github.mjksabit.spondon.service.DoctorUserService;
 import com.github.mjksabit.spondon.service.DocumentService;
 import com.github.mjksabit.spondon.util.JwtTokenUtil;
 import org.json.JSONArray;
@@ -11,41 +10,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user/document")
-public class PatientDocumentController {
-
-    @Autowired
-    DocumentService documentService;
+@RequestMapping("/api/v1/doctor")
+public class DoctorController {
 
     @Autowired
     JwtTokenUtil jwtTokenUtil;
 
-    @JsonView(View.Public.class)
-    @GetMapping(path = "/all")
-    public ResponseEntity<?> getAllDocuments(@RequestHeader("Authorization") String bearerToken,
-                                             @RequestParam(required = false, defaultValue = "0") int page) {
+    @Autowired
+    DoctorUserService doctorUserService;
+
+    @Autowired
+    DocumentService documentService;
+
+    @GetMapping(path = "/shared")
+    public ResponseEntity<?> getSharedDocuments(@RequestHeader("Authorization") String bearerToken,
+                                                @RequestParam(required = false, defaultValue = "0") int page) {
         String jwt = bearerToken.substring(7);
         String username = jwtTokenUtil.getUsernameFromToken(jwt);
-        return ResponseEntity.ok(documentService.getOwnedDocuments(username, page));
+        return ResponseEntity.ok(doctorUserService.getSharedDocuments(username, page));
     }
 
-    @JsonView(View.Public.class)
-    @GetMapping(path = "/pending")
-    public ResponseEntity<?> getPendingDocuments(@RequestHeader("Authorization") String bearerToken,
-                                                 @RequestParam(required = false, defaultValue = "0") int page) {
+    @GetMapping(path = "/uploaded")
+    public ResponseEntity<?> getUploadedDocuments(@RequestHeader("Authorization") String bearerToken,
+                                                  @RequestParam(required = false, defaultValue = "0") int page) {
         String jwt = bearerToken.substring(7);
         String username = jwtTokenUtil.getUsernameFromToken(jwt);
-        return ResponseEntity.ok(documentService.getPendingDocuments(username, page));
-    }
-
-    @PutMapping(path = "/approve/{id}")
-    public ResponseEntity<?> approveDocument(@RequestHeader("Authorization") String bearerToken, @PathVariable long id) {
-        String jwt = bearerToken.substring(7);
-        String username = jwtTokenUtil.getUsernameFromToken(jwt);
-        if (documentService.approveDocument(username, id))
-            return ResponseEntity.ok().build();
-        else
-            return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(doctorUserService.getUploadedDocuments(username, page));
     }
 
     @GetMapping(path = "/collections")
@@ -96,7 +86,7 @@ public class PatientDocumentController {
         String jwt = bearerToken.substring(7);
         String username = jwtTokenUtil.getUsernameFromToken(jwt);
         long collectionId = new JSONObject(requestString).getLong("id");
-        if (documentService.setToCollection(username, id, collectionId))
+        if (doctorUserService.setToCollection(username, id, collectionId))
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.badRequest().build();
@@ -108,30 +98,21 @@ public class PatientDocumentController {
                                                     @RequestParam(required = false, defaultValue = "0") int page) {
         String jwt = bearerToken.substring(7);
         String username = jwtTokenUtil.getUsernameFromToken(jwt);
-        return ResponseEntity.ok(documentService.getCollectionDocuments(username, id, page));
+        return ResponseEntity.ok(doctorUserService.getCollectionDocuments(username, id, page));
     }
 
     @PostMapping(path = "/share/{id}")
-    public ResponseEntity<?> shareDocument(@RequestHeader("Authorization") String bearerToken,
+    public ResponseEntity<?> shareFromDoctorDocument(@RequestHeader("Authorization") String bearerToken,
                                            @PathVariable long id,
                                            @RequestBody String requestString) {
         String jwt = bearerToken.substring(7);
         String username = jwtTokenUtil.getUsernameFromToken(jwt);
         JSONArray listOfShare = new JSONArray(requestString);
         try {
-            documentService.shareUserDocument(username, listOfShare, id);
+            doctorUserService.shareUserDocument(username, listOfShare, id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
-
-    @GetMapping(path = "/shared")
-    public ResponseEntity<?> getSharedDocuments(@RequestHeader("Authorization") String bearerToken,
-                                                @RequestParam(required = false, defaultValue = "0") int page) {
-        String jwt = bearerToken.substring(7);
-        String username = jwtTokenUtil.getUsernameFromToken(jwt);
-        return ResponseEntity.ok(documentService.getSharedDocuments(username, page));
-    }
-
 }
