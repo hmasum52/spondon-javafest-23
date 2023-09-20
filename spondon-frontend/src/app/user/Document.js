@@ -34,13 +34,14 @@ export default function Document({
   collections = [],
   selectedCollection = (d, c) => {},
   aesKey,
+  dialog = false,
 }) {
   const secured = document.aesKey;
   const [accepted, setAccepted] = useState(document?.accepted);
   const [showShareModal, setShowShareModal] = useState(false);
 
   return (
-    <div className="col-md-6 grid-margin stretch-card">
+    <div className={`col-md-${dialog ? 12 : 6} grid-margin stretch-card`}>
       <div className="card">
         <div className="card-body">
           <h4 className="card-title">
@@ -70,7 +71,7 @@ export default function Document({
             </div>
           </div>
 
-          {document?.accepted && (
+          {document?.accepted && !dialog && (
             <div className="col-md-12 mb-2">
               <select
                 className="form-control"
@@ -151,14 +152,16 @@ export default function Document({
               </button>
             </div>
           ) : (
-            <div className="col-md-12">
-              <button
-                className="btn btn-primary btn-block"
-                onClick={() => setShowShareModal(true)}
-              >
-                Share Document
-              </button>
-            </div>
+            !dialog && (
+              <div className="col-md-12">
+                <button
+                  className="btn btn-primary btn-block"
+                  onClick={() => setShowShareModal(true)}
+                >
+                  Share Document
+                </button>
+              </div>
+            )
           )}
         </div>
       </div>

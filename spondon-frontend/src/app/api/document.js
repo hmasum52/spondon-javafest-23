@@ -12,9 +12,7 @@ export const uploadDocument = async (document) =>
     .then((res) => res.data);
 
 export const getPossibleDoctors = async () =>
-  axios
-    .get(api_url("/document-upload/sharable-users"))
-    .then((res) => res.data);
+  axios.get(api_url("/document-upload/sharable-users")).then((res) => res.data);
 
 export const getOwnedDocuments = async (page) =>
   axios.get(api_url(`/user/document/all?page=${page}`)).then((res) => res.data);
@@ -60,4 +58,9 @@ export const getCollectionDocuments = async (id, page) =>
 export const shareDocument = async (userId, documents) =>
   axios
     .post(api_url(`/user/document/share/${userId}`), documents)
+    .then((res) => res.data);
+
+export const getSharedDocuments = async (page) =>
+  axios
+    .get(api_url(`/user/document/shared?page=${page}`))
     .then((res) => res.data);

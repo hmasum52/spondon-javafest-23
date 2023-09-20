@@ -12,4 +12,6 @@ public interface ShareRepository extends PagingAndSortingRepository<SharedDocume
     Slice<SharedDocument> findAllBySharedToUsernameIgnoreCaseAndCollection(String username, DocumentCollection collection, Pageable pageable);
 
     boolean existsByDocumentIdAndSharedToId(Long documentId, Long sharedToId);
+
+    Slice<SharedDocument> findAllByDocumentOwnerUserUsername(String username, Pageable pageable);
 }

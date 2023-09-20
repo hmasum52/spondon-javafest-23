@@ -125,4 +125,12 @@ public class PatientDocumentController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping(path = "/shared")
+    public ResponseEntity<?> getSharedDocuments(@RequestHeader("Authorization") String bearerToken,
+                                                @RequestParam(required = false, defaultValue = "0") int page) {
+        String jwt = bearerToken.substring(7);
+        String username = jwtTokenUtil.getUsernameFromToken(jwt);
+        return ResponseEntity.ok(documentService.getSharedDocuments(username, page));
+    }
 }

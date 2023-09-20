@@ -20,6 +20,7 @@ const AddDocument = lazy(() => import("./common/UploadDocument"));
 const ViewDocuments = lazy(() => import("./user/OwnedDocuments"));
 const PendingDocuments = lazy(() => import("./user/NotAcceptedDocuments"));
 const Collections = lazy(() => import("./user/Collections"));
+const SharedByMe = lazy(() => import("./user/SharedByMe"));
 
 const AdminHome = lazy(() => import("./admin/Dashboard"));
 const AddDoctor = lazy(() => import("./admin/AddDoctor"));
@@ -42,6 +43,7 @@ export default function AppRoutes() {
                 <Route path="/user/documents/accept" component={PendingDocuments} />
                 <Route path="/user/collections" component={Collections} exact />
                 <Route path="/user/collections/:id" component={Collections} />
+                <Route path="/user/shared" component={SharedByMe} />
                 <Redirect to="/user/dashboard" />
               </Switch>
             )}

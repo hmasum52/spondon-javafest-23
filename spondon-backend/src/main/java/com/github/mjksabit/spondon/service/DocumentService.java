@@ -183,4 +183,11 @@ public class DocumentService {
             shareRepository.save(sharedDocument);
         }
     }
+
+    public Slice<SharedDocument> getSharedDocuments(String username, int page) {
+        return shareRepository.findAllByDocumentOwnerUserUsername(
+                username,
+                PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending())
+        );
+    }
 }
