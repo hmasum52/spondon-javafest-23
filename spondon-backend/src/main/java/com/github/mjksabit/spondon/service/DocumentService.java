@@ -73,7 +73,7 @@ public class DocumentService {
         if (anonymousData.getData() != null && anonymousData.getData().length() > 0)
             anonymousDataRepository.save(anonymousData);
 
-        document.setOwner(patientUserRepository.findPatientUserByUserUsernameIgnoreCase(owner));
+        document.setOwner(patientUserRepository.findPatientUserByUserUsername(owner));
         document.setUploader(userRepository.findUserByUsernameIgnoreCase(uploader));
         document.setAccepted(owner.equalsIgnoreCase(uploader));
         documentRepository.save(document);

@@ -1,5 +1,6 @@
 package com.github.mjksabit.spondon.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.mjksabit.spondon.consts.View;
@@ -49,6 +50,10 @@ public class PatientUser implements Serializable {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id", unique = true)
     private User user;
+
+    @JsonIgnore
+    @Column(columnDefinition="TEXT", nullable = false)
+    private String emergencyProfile = "";
 
     @Override
     public boolean equals(Object o) {

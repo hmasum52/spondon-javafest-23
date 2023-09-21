@@ -8,11 +8,10 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 export const formatDateFromTimestamp = (
   timestamp,
-  { timeStyle, dateStyle } = { timeStyle: "short", dateStyle: "short" }
+  style = { timeStyle: "short", dateStyle: "short" }
 ) => {
   return new Intl.DateTimeFormat("en-BD", {
-    dateStyle,
-    timeStyle,
+    ...style,
     timeZone: "Asia/Dhaka",
     hourCycle: "h12",
   }).format(new Date(timestamp));

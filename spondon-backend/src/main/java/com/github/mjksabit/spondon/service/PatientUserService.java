@@ -1,13 +1,11 @@
 package com.github.mjksabit.spondon.service;
 
-import com.github.mjksabit.spondon.model.Document;
 import com.github.mjksabit.spondon.model.PatientUser;
 import com.github.mjksabit.spondon.repository.PatientUserRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -42,7 +40,7 @@ public class PatientUserService {
     }
 
     public PatientUser get(String username) {
-        return patientUserRepository.findPatientUserByUserUsernameIgnoreCase(username);
+        return patientUserRepository.findPatientUserByUserUsername(username);
     }
 
     public List<PatientUser> getAll() {
@@ -50,11 +48,22 @@ public class PatientUserService {
     }
 
     public List<PatientUser> getAll(String username) {
-        return patientUserRepository.findAllByUserUsernameIgnoreCase(username);
+        return patientUserRepository.findAllByUserUsername(username);
     }
 
     public void save(PatientUser patientUser) {
         patientUserRepository.save(patientUser);
     }
 
+    public void updateEmergencyProfile(String username, String data) {
+        PatientUser patientUser = get(username);
+        patientUser.setEmergencyProfile(data);
+        save(patientUser);
+    }
+
+    public void updateProfile(String username, String data) throws Exception {
+        PatientUser patientUser = get(username);
+        patientUser = retrieve(patientUser, new JSONObject(data));
+        save(patientUser);
+    }
 }
