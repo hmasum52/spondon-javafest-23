@@ -34,7 +34,7 @@ export default function Document({
   document,
   collections = [],
   selectedCollection = (d, c) => {},
-  aesKey,
+  notAccessible,
   dialog = false,
 }) {
   const secured = document.aesKey;
@@ -64,11 +64,21 @@ export default function Document({
             </div>
             <div className="col-md-6">
               <p className="text-muted">Created At</p>
-              <p>{formatDateFromTimestamp(document.creationTime, {dateStyle: "medium", timeStyle: "short"})}</p>
+              <p>
+                {formatDateFromTimestamp(document.creationTime, {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </p>
             </div>
             <div className="col-md-6">
               <p className="text-muted">Uploaded At</p>
-              <p>{formatDateFromTimestamp(document.uploadTime, {dateStyle: "medium", timeStyle: "short"})}</p>
+              <p>
+                {formatDateFromTimestamp(document.uploadTime, {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </p>
             </div>
             {document.sharedTo && (
               <>
@@ -78,13 +88,18 @@ export default function Document({
                 </div>
                 <div className="col-md-6">
                   <p className="text-muted">Shared At</p>
-                  <p>{formatDateFromTimestamp(document.uploadTime, {dateStyle: "medium", timeStyle: "short"})}</p>
+                  <p>
+                    {formatDateFromTimestamp(document.uploadTime, {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
+                  </p>
                 </div>
               </>
             )}
           </div>
 
-          {document?.accepted && !dialog && (
+          {document?.accepted && !notAccessible && !dialog && (
             <div className="col-md-12 mb-2">
               <select
                 className="form-control"
@@ -105,76 +120,91 @@ export default function Document({
               </select>
             </div>
           )}
-
-          <div className="col-md-12 mb-2">
-            <button
-              className="btn btn-outline-info btn-block"
-              onClick={(e) => {
-                e.preventDefault();
-                (async () => {
-                  let toastId = toast.loading("Downloading...");
-                  try {
-                    const doc = await downloadFromFirebase(document.documentId);
-                    console.log(document);
-                    toast.loading("Decrypting Document...", { id: toastId });
-                    const data = secured
-                      ? await decryptDocument(doc, aesKey || document.aesKey)
-                      : doc;
-                    toast.loading("Previewing Document...", { id: toastId });
-                    var file = new Blob([data], {
-                      type: "application/pdf",
-                    });
-
-                    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-                      // For IE
-                      window.navigator.msSaveOrOpenBlob(file, "mypdf.pdf");
-                    } else {
-                      // For non-IE
-                      var fileURL = URL.createObjectURL(file);
-                      window.open(fileURL);
-                    }
-                    toast.success("Document Previewed", { id: toastId });
-                  } catch (error) {
-                    console.log(error);
-                    toast.error("Error Occured: " + error?.message, {
-                      id: toastId,
-                    });
-                  }
-                })();
-              }}
-            >
-              View Document
-            </button>
-          </div>
-          {!accepted ? (
-            <div className="col-md-12">
-              <button
-                className="btn btn-success btn-block"
-                onClick={(e) => {
-                  toast.promise(
-                    acceptDocument(document.id).then((e) => setAccepted(true)),
-                    {
-                      loading: "Accepting Document...",
-                      success: "Document Accepted",
-                      error: "Error Occured",
-                    }
-                  );
-                }}
-              >
-                Accept Document
-              </button>
-            </div>
-          ) : (
-            !dialog && (
-              <div className="col-md-12">
+          {!notAccessible && (
+            <>
+              <div className="col-md-12 mb-2">
                 <button
-                  className="btn btn-primary btn-block"
-                  onClick={() => setShowShareModal(true)}
+                  className="btn btn-outline-info btn-block"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    (async () => {
+                      let toastId = toast.loading("Downloading...");
+                      try {
+                        const doc = await downloadFromFirebase(
+                          document.documentId
+                        );
+                        console.log(document);
+                        toast.loading("Decrypting Document...", {
+                          id: toastId,
+                        });
+                        const data = secured
+                          ? await decryptDocument(doc, document.aesKey)
+                          : doc;
+                        toast.loading("Previewing Document...", {
+                          id: toastId,
+                        });
+                        var file = new Blob([data], {
+                          type: "application/pdf",
+                        });
+
+                        if (
+                          window.navigator &&
+                          window.navigator.msSaveOrOpenBlob
+                        ) {
+                          // For IE
+                          window.navigator.msSaveOrOpenBlob(file, "mypdf.pdf");
+                        } else {
+                          // For non-IE
+                          var fileURL = URL.createObjectURL(file);
+                          window.open(fileURL);
+                        }
+                        toast.success("Document Previewed", { id: toastId });
+                      } catch (error) {
+                        console.log(error);
+                        toast.error("Error Occured: " + error?.message, {
+                          id: toastId,
+                        });
+                      }
+                    })();
+                  }}
                 >
-                  Share Document
+                  View Document
                 </button>
               </div>
-            )
+
+              {!accepted ? (
+                <div className="col-md-12">
+                  <button
+                    className="btn btn-success btn-block"
+                    onClick={(e) => {
+                      toast.promise(
+                        acceptDocument(document.id).then((e) =>
+                          setAccepted(true)
+                        ),
+                        {
+                          loading: "Accepting Document...",
+                          success: "Document Accepted",
+                          error: "Error Occured",
+                        }
+                      );
+                    }}
+                  >
+                    Accept Document
+                  </button>
+                </div>
+              ) : (
+                !dialog && (
+                  <div className="col-md-12">
+                    <button
+                      className="btn btn-primary btn-block"
+                      onClick={() => setShowShareModal(true)}
+                    >
+                      Share Document
+                    </button>
+                  </div>
+                )
+              )}
+            </>
           )}
         </div>
       </div>

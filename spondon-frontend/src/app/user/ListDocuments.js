@@ -11,6 +11,7 @@ export default function ListDocuments({
   first = true,
   last = true,
   page = 0,
+  notAccessible = false,
 }) {
   const history = useHistory();
 
@@ -40,6 +41,7 @@ export default function ListDocuments({
             document={document}
             collections={collections}
             selectedCollection={selectedCollection}
+            notAccessible={notAccessible}
           />
         ))}
       </div>

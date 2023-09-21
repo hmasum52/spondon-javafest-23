@@ -4,21 +4,19 @@ import {
   useLocation,
   useParams,
 } from "react-router-dom/cjs/react-router-dom.min";
-import {
-  getCollections,
-} from "../api/document";
+import { getCollections } from "../api/document";
 import { Badge } from "react-bootstrap";
 import Document from "../user/Document";
 import toast from "react-hot-toast";
 import ListDocuments from "../user/ListDocuments";
-import { getSharedDocuments } from "../api/doctor";
+import { getSharedDocuments, getUploadedDocuments } from "../api/doctor";
 
 export function useQuery() {
   const { search, location } = useLocation();
   return [useMemo(() => new URLSearchParams(search), [search]), location];
 }
 
-export default function SharedWithDocuments() {
+export default function UploadedDocuments() {
   const [query, location] = useQuery();
   const page = (Number.parseInt(query.get("page")) || 1) - 1;
 
@@ -30,18 +28,8 @@ export default function SharedWithDocuments() {
   useEffect(() => {
     (async () => {
       toast.promise(
-        getSharedDocuments(page).then((res) => {
-          setDocuments(
-            res.content.map((sd) => ({
-              ...sd.document,
-              id: sd.id,
-              aesKey: sd.aesKey,
-              sharedBy: sd.sharedBy,
-              sharedTo: sd.sharedTo,
-              shareTime: sd.shareTime,
-              collection: sd.collection,
-            }))
-          );
+        getUploadedDocuments(page).then((res) => {
+          setDocuments(res.content);
           setFirst(res.first);
           setLast(res.last);
         }),
@@ -63,7 +51,7 @@ export default function SharedWithDocuments() {
   return (
     <div>
       <div className="page-header">
-        <h3 className="page-title"> Doucuments Shared with Me </h3>
+        <h3 className="page-title"> Uploaded Documents </h3>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
@@ -72,7 +60,7 @@ export default function SharedWithDocuments() {
               </a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              Shared
+              Uploaded
             </li>
           </ol>
         </nav>
@@ -85,6 +73,7 @@ export default function SharedWithDocuments() {
         first={first}
         last={last}
         page={page}
+        notAccessible={true}
       />
     </div>
   );
