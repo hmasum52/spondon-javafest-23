@@ -30,6 +30,7 @@ const DoctorHome = lazy(() => import("./doctor/Dashboard"));
 const SharedWithMe = lazy(() => import("./doctor/SharedWithMe"));
 const UploadedByDoctor = lazy(() => import("./doctor/UploadedByDoctor"));
 const AccessEmergency = lazy(() => import("./doctor/AceessEmergencyProfile"));
+const DoctorSettings = lazy(() => import("./doctor/DoctorSettings"));
 
 const Verify = lazy(() => import("./user-pages/Verify"));
 
@@ -75,6 +76,7 @@ export default function AppRoutes() {
                 <Route path="/doctor/documents/add" component={AddDocument} />
                 <Route path="/doctor/documents/view" component={SharedWithMe} />
                 <Route path="/doctor/emergency" component={AccessEmergency} />
+                <Route path="/doctor/settings" component={DoctorSettings} />
                 <Route
                   path="/doctor/documents/uploaded"
                   component={UploadedByDoctor}

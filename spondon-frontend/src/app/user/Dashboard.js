@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ProgressBar } from "react-bootstrap";
+import { Alert, ProgressBar } from "react-bootstrap";
 // import {Bar, Doughnut} from 'react-chartjs-2';
 import DatePicker from "react-datepicker";
 import { getProfile, updateEmergencyProfile } from "../api/user";
@@ -26,6 +26,7 @@ import {
   thematicBreakPlugin,
 } from "@mdxeditor/editor";
 import { uploadImage } from "../api/external";
+import { validateKeys } from "../common/public-private-encryption";
 
 // import "react-datepicker/dist/react-datepicker.css";
 
@@ -34,12 +35,39 @@ function UserProfile() {
   const [editMode, setEditMode] = useState(false);
   const [markdown, setMarkdown] = useState("");
 
+  const [notification, setNotifications] = useState({
+    text: "Generate public and private keys to enable others to share secured documents with you.",
+    type: "info",
+  });
+
   const markdownRef = React.useRef(null);
 
   useEffect(() => {
     toast.promise(
       getProfile().then((res) => {
         setProfile(res);
+        const privateKey = localStorage.getItem("privateKey");
+        if (!res?.user?.publicKey) {
+          setNotifications({
+            text: "You have not generated a public-private key. Please generate a key pair to enable others to share secured documents with you.",
+            type: "warning",
+          });
+        } else if (res?.user?.publicKey && !privateKey) {
+          setNotifications({
+            text: "You have not saved a private key. Please save private key in your security settings to view end to end encrypted documents.",
+            type: "warning",
+          });
+        } else if (!validateKeys(privateKey, res?.user?.publicKey)) {
+          setNotifications({
+            text: "Your private key does not match your public key. Please save the correct private key in your security settings to view end to end encrypted documents.",
+            type: "warning",
+          });
+        } else {
+          setNotifications({
+            text: "Your account is secured with a private key. Please do not share your private key with anyone.",
+            type: "success",
+          });
+        }
       }),
       {
         loading: "Loading profile",
@@ -72,6 +100,14 @@ function UserProfile() {
             <div className="col-md-12 stretch-card grid-margin">
               <div className="card bg-gradient-dark card-img-holder text-white">
                 <div className="card-body">
+                  <img
+                    src={
+                      require("../../assets/images/dashboard/circle.svg")
+                        .default
+                    }
+                    className="card-img-absolute"
+                    alt="circle"
+                  />
                   <img
                     src={profile.imageURL}
                     className="rounded-circle mb-3 mr-3"
@@ -114,6 +150,10 @@ function UserProfile() {
               </div>
             </div>
           </div>
+          <Alert variant={notification.type} className="mb-5">
+            <Alert.Heading className="my-2">Security Information</Alert.Heading>
+            <p>{notification.text}</p>
+          </Alert>
           <div className="row">
             <div className={`col-md-12 grid-margin stretch-card`}>
               <div className="card">

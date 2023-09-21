@@ -55,4 +55,25 @@ public class DoctorController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping(path = "/profile")
+    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String bearerToken) {
+        String jwt = bearerToken.substring(7);
+        String username = jwtTokenUtil.getUsernameFromToken(jwt);
+        return ResponseEntity.ok(doctorUserService.getProfile(username));
+    }
+
+    @PutMapping(path = "/profile")
+    public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String bearerToken,
+                                           @RequestBody String requestString) {
+        String jwt = bearerToken.substring(7);
+        String username = jwtTokenUtil.getUsernameFromToken(jwt);
+        try {
+            doctorUserService.updateProfile(username, new JSONObject(requestString));
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.warning(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

@@ -10,4 +10,6 @@ import java.util.List;
 public interface DoctorUserRepository extends CrudRepository<DoctorUser, String> {
 //    DoctorUser findDoctorUserUserUsernameIgnoreCase(String username);
     List<DoctorUser> findAll();
+
+    DoctorUser findDoctorUserByUserUsername(String username);
 }

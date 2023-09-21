@@ -175,7 +175,7 @@ export default function Document({
               {!accepted ? (
                 <div className="col-md-12">
                   <button
-                    className="btn btn-success btn-block"
+                    className="btn btn-inverse-success btn-block"
                     onClick={(e) => {
                       toast.promise(
                         acceptDocument(document.id).then((e) =>
@@ -196,7 +196,7 @@ export default function Document({
                 !dialog && (
                   <div className="col-md-12">
                     <button
-                      className="btn btn-primary btn-block"
+                      className="btn btn-inverse-primary btn-block"
                       onClick={() => setShowShareModal(true)}
                     >
                       Share Document

@@ -126,4 +126,18 @@ public class DoctorUserService {
 
         return jsonObject;
     }
+
+
+    public DoctorUser getProfile(String username) {
+        return doctorUserRepository.findDoctorUserByUserUsername(username);
+    }
+
+    public void updateProfile(String username, JSONObject jsonObject) {
+        DoctorUser doctorUser = doctorUserRepository.findDoctorUserByUserUsername(username);
+        doctorUser.setName(jsonObject.getString(NAME_KEY));
+        doctorUser.setRegistrationNumber(jsonObject.getLong(REGISTRATION_KEY));
+        doctorUser.setSpeciality(jsonObject.getString(SPECIALITY_KEY));
+        doctorUser.setEducation(jsonObject.getString(EDUCATION_KEY));
+        doctorUserRepository.save(doctorUser);
+    }
 }

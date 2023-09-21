@@ -22,7 +22,7 @@ export default function UserSettings() {
         if (nameRef.current) nameRef.current.value = res.name;
         if (bloodRef.current) bloodRef.current.value = res.bloodGroup;
         if (aboutRef.current) aboutRef.current.value = res.about;
-        if (birthCertRef.current)
+        if (birthRef.current)
           birthRef.current.value = dateFromTimestamp(res.dateOfBirth);
         if (birthCertRef.current)
           birthCertRef.current.value = res.birthCertificateNumber;
