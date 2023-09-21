@@ -118,16 +118,16 @@ function UserSideBar(props) {
                 {" "}
                 <Link
                   className={
-                    isPathActive("/user/assistance/symptom-checker-free")
+                    isPathActive("/user/assistance/symptom-checker")
                       ? "nav-link active"
                       : "nav-link"
                   }
-                  to="/user/assistance/symptom-checker-free"
+                  to="/user/assistance/symptom-checker"
                 >
                   Symptom Checker - Free
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 {" "}
                 <Link
                   className={
@@ -139,7 +139,7 @@ function UserSideBar(props) {
                 >
                   Symptom Checker - Pro
                 </Link>
-              </li>
+              </li> */}
               <li className="nav-item">
                 {" "}
                 <Link

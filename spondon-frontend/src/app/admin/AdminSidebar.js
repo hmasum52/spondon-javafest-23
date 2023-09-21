@@ -239,7 +239,7 @@ function SideBar(props) {
             </ul>
           </Collapse>
         </li> */}
-        <li
+        {/* <li
           className={
             isPathActive("/admin/add-hospital") ? "nav-item active" : "nav-item"
           }
@@ -248,7 +248,7 @@ function SideBar(props) {
             <span className="menu-title">Add Hospital</span>
             <i className="mdi mdi-plus-network-outline menu-icon"></i>
           </Link>
-        </li>
+        </li> */}
         <li
           className={
             isPathActive("/admin/users") ? "nav-item active" : "nav-item"

@@ -22,6 +22,7 @@ const PendingDocuments = lazy(() => import("./user/NotAcceptedDocuments"));
 const Collections = lazy(() => import("./user/Collections"));
 const SharedByMe = lazy(() => import("./user/SharedByMe"));
 const UserSettings = lazy(() => import("./user/UserSettings"));
+const SymptomChecker = lazy(() => import("./user/SymptomChecker"));
 
 const AdminHome = lazy(() => import("./admin/Dashboard"));
 const AddDoctor = lazy(() => import("./admin/AddDoctor"));
@@ -58,6 +59,7 @@ export default function AppRoutes() {
                 <Route path="/user/collections/:id" component={Collections} />
                 <Route path="/user/shared" component={SharedByMe} />
                 <Route path="/user/settings" component={UserSettings} />
+                <Route path="/user/assistance/symptom-checker" component={SymptomChecker} />
                 <Redirect to="/user/dashboard" />
               </Switch>
             )}
