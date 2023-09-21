@@ -4,6 +4,7 @@ import { FileUploader } from "react-drag-drop-files";
 import toast from "react-hot-toast";
 import { uploadImage } from "../api/external";
 import { getProfile, updateProfile } from "../api/user";
+import { dateFromTimestamp } from "../common/UploadDocument";
 
 export default function UserSettings() {
   const [imageURL, setImageUrl] = useState("");
@@ -21,9 +22,8 @@ export default function UserSettings() {
         if (nameRef.current) nameRef.current.value = res.name;
         if (bloodRef.current) bloodRef.current.value = res.bloodGroup;
         if (aboutRef.current) aboutRef.current.value = res.about;
-        const dob = new Date(res.dateOfBirth + 6 * 60 * 60 * 1000);
         if (birthCertRef.current)
-          birthRef.current.value = dob.toISOString().split("T")[0];
+          birthRef.current.value = dateFromTimestamp(res.dateOfBirth);
         if (birthCertRef.current)
           birthCertRef.current.value = res.birthCertificateNumber;
       }),

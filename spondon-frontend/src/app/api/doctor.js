@@ -6,3 +6,8 @@ export const getUploadedDocuments = async (page) =>
 
 export const getSharedDocuments = async (page) =>
   axios.get(api_url(`/doctor/shared?page=${page}`)).then((res) => res.data);
+
+export const accessEmergencyProfile = async (username) =>
+  axios
+    .get(api_url(`/doctor/emergency/${username}`))
+    .then((res) => res.data);

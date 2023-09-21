@@ -49,7 +49,9 @@ export default function ListDocuments({
       <div className="row">
         <div className="col-6">
           <button
-            className="btn btn-outline-primary btn-block"
+            className={
+              "btn btn-outline-primary btn-block" + (first ? " invisible" : "")
+            }
             disabled={first}
             onClick={() => {
               history.push({ search: `?page=${page}` });
@@ -60,7 +62,9 @@ export default function ListDocuments({
         </div>
         <div className="col-6">
           <button
-            className="btn btn-outline-primary btn-block"
+            className={
+              "btn btn-outline-primary btn-block" + (last ? " invisible" : "")
+            }
             disabled={last}
             onClick={() => {
               history.push({ search: `?page=${page + 2}` });

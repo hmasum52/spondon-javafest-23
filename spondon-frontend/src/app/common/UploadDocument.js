@@ -27,6 +27,12 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export const dateFromTimestamp = (timestamp) => {
+  let date = new Date(timestamp);
+  date = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return date.toISOString().split("T")[0];
+};
+
 const generateRandomPassword = () => {
   let chars =
     "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -78,11 +84,7 @@ export default function UploadDocument() {
 
   let creationDate = null;
   if (fileDetails.creationDate) {
-    creationDate = new Date(fileDetails.creationDate);
-    creationDate = new Date(
-      creationDate.getTime() - creationDate.getTimezoneOffset() * 60000
-    );
-    creationDate = creationDate.toISOString().split("T")[0];
+    creationDate = dateFromTimestamp(fileDetails.creationDate);
   }
 
   const uploadToFirebase = (documentId, file) =>

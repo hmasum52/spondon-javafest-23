@@ -244,9 +244,9 @@ function UserSideBar(props) {
             isPathActive("/doctor/emergency") ? "nav-item active" : "nav-item"
           }
         >
-          <Link className="nav-link" to="/user/shared">
+          <Link className="nav-link" to="/doctor/emergency">
             <span className="menu-title">Emergency Info</span>
-            <i className="mdi mdi-share menu-icon"></i>
+            <i className="mdi mdi-car-brake-alert menu-icon"></i>
           </Link>
         </li>
         <li

@@ -13,7 +13,11 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Table(name = "user_table")
 public class User implements Serializable {
     @JsonIgnore

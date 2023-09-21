@@ -15,6 +15,7 @@
     "bootstrap": "^4.6.0",
     "buffer": "^6.0.3",
     "compass-mixins": "^0.12.12",
+    "dom-to-pdf": "^0.3.2",
     "firebase": "^10.4.0",
     "jsencrypt": "^3.3.2",
     "nouislider": "^15.7.1",

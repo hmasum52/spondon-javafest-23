@@ -32,10 +32,13 @@ public class DoctorUserService {
     private ShareRepository shareRepository;
 
     @Autowired
-    private CollectionRepository collectionRepository;
+    private UserLogRepository userLogRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PatientUserRepository patientUserRepository;
 
     public DoctorUser retrieve(DoctorUser user, JSONObject data) {
         user.setName(data.getString(NAME_KEY));
@@ -108,5 +111,19 @@ public class DoctorUserService {
             sharedDocument.setShareTime(new Date());
             shareRepository.save(sharedDocument);
         }
+    }
+
+    public JSONObject accessEmergencyProfile(String username, String patient) {
+        PatientUser patientUser = patientUserRepository.findPatientUserByUserUsername(patient);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("emergencyProfile", patientUser.getEmergencyProfile());
+
+        UserLog patientLog = new UserLog();
+        patientLog.setLog(String.format("[EMG_PRO_ACCESS] Emergency Profile Accessed by Doctor (%s)", username));
+        patientLog.setUser(patientUser.getUser());
+        patientLog.setNotification(true);
+        userLogRepository.save(patientLog);
+
+        return jsonObject;
     }
 }
