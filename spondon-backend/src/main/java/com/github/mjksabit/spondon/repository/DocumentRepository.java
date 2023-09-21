@@ -6,6 +6,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface DocumentRepository extends PagingAndSortingRepository<Document, Long> {
     Slice<Document> findAllByOwnerUserUsernameAndAccepted(String username, boolean accepted, Pageable pageable);
@@ -15,4 +17,5 @@ public interface DocumentRepository extends PagingAndSortingRepository<Document,
     Slice<Document> findAllByOwnerUserUsernameAndCollectionOwnerUsernameAndCollectionId(
             String username, String owner, long collectionId, Pageable pageable);
 
+    List<Document> findAllByHashAndAcceptedIsTrue(String hash);
 }

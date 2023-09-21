@@ -158,7 +158,7 @@ export default function AceessEmergencyDocument() {
                           const element = pdfRef.current;
                           const option = {
                             filename: `emergency-profile-${profile.user.username}.pdf`,
-                            overrideWidth: 500,
+                            overrideWidth: 800,
                             excludeTagNames: ["button"],
                           };
                           toast.promise(

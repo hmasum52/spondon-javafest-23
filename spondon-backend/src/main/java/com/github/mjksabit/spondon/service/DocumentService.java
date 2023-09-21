@@ -242,4 +242,8 @@ public class DocumentService {
             }
         }
     }
+
+    public List<Document> getDocumentsByHash(String hash) {
+        return documentRepository.findAllByHashAndAcceptedIsTrue(hash);
+    }
 }

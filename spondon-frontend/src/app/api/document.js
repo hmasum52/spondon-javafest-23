@@ -35,9 +35,7 @@ export const setToCollection = async (documentId, collectionId) =>
     .then((res) => res.data);
 
 export const addCollection = async (name) =>
-  axios
-    .post(api_url(`/common/collection`), { name })
-    .then((res) => res.data);
+  axios.post(api_url(`/common/collection`), { name }).then((res) => res.data);
 
 export const editCollection = async (id, name) =>
   axios
@@ -45,9 +43,7 @@ export const editCollection = async (id, name) =>
     .then((res) => res.data);
 
 export const deleteCollection = async (id) =>
-  axios
-    .delete(api_url(`/common/collection/${id}`))
-    .then((res) => res.data);
+  axios.delete(api_url(`/common/collection/${id}`)).then((res) => res.data);
 
 export const getCollectionDocuments = async (id, page) =>
   axios
@@ -63,3 +59,6 @@ export const getSharedDocuments = async (page) =>
   axios
     .get(api_url(`/user/document/shared?page=${page}`))
     .then((res) => res.data);
+
+export const verifyDocuemnt = async (hash) =>
+  axios.get(api_url(`/public/verify/${hash}`)).then((res) => res.data);

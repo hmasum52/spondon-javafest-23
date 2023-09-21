@@ -31,6 +31,8 @@ const SharedWithMe = lazy(() => import("./doctor/SharedWithMe"));
 const UploadedByDoctor = lazy(() => import("./doctor/UploadedByDoctor"));
 const AccessEmergency = lazy(() => import("./doctor/AceessEmergencyProfile"));
 
+const Verify = lazy(() => import("./user-pages/Verify"));
+
 export default function AppRoutes() {
   const { user } = useContext(UserContext);
 
@@ -40,6 +42,7 @@ export default function AppRoutes() {
         {user && (
           <Switch>
             <Route path="/security-settings" component={SecuritySettings} />
+            <Route path="/verify" component={Verify} />
 
             {user?.role === "ROLE_USER" && (
               <Switch>

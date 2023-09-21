@@ -81,7 +81,7 @@ function UserSideBar(props) {
               <span className="font-weight-bold mb-2">
                 {user?.username || "User"}
               </span>
-              <span className="text-secondary text-small">Site User</span>
+              <span className="text-secondary text-small">Doctor</span>
             </div>
             <i className="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
           </a>

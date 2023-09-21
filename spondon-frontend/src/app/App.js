@@ -81,7 +81,7 @@ function App() {
 
   function onRouteChanged(location) {
     window.scrollTo(0, 0);
-    const fullPageLayoutRoutes = ["/auth/", "/form/"];
+    const fullPageLayoutRoutes = ["/auth/", "/form/", "/verify"];
     const isFullPageLayout = fullPageLayoutRoutes.some((l) =>
       location.pathname.startsWith(l)
     );
