@@ -37,19 +37,23 @@ export default function Activate() {
         dateOfBirth,
         bloodGroup,
         about,
-        birthCertificateNumber,
+        birthCertificateNumber: parseInt(birthCertificateNumber),
         imageURL,
       };
 
       const toastId = toast.loading("Activating account...");
-      activate(token, userInfo).then((e) => {
-        toast.dismiss(toastId);
-        toast.success("Account activated successfully! Log in to continue...");
-        history.push("/auth/login");
-      }).catch(e => {
-        toast.dismiss(toastId);
-        toast.error("Account activation failed! Try again later...");
-      })
+      activate(token, userInfo)
+        .then((e) => {
+          toast.dismiss(toastId);
+          toast.success(
+            "Account activated successfully! Log in to continue..."
+          );
+          history.push("/auth/login");
+        })
+        .catch((e) => {
+          toast.dismiss(toastId);
+          toast.error("Account activation failed! Try again later...");
+        });
     } catch (e) {
       console.log(e);
       toast.error(e.message);
@@ -86,12 +90,12 @@ export default function Activate() {
                     <img
                       src={imageURL}
                       alt="Profile"
+                      className="rounded-circle mr-2"
                       style={{ maxHeight: "4rem", maxWidth: "20%" }}
                     />
                   )}
                   <FileUploader
-                    className="flex-grow-1"
-                    style={{ minWidth: "100px" }}
+                    classes="flex-grow-1 my-auto"
                     label="Upload or drop your profile picture here"
                     handleChange={(file) => {
                       const toastId = toast.loading("Uploading image...");

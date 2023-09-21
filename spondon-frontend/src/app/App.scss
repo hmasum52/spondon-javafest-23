@@ -8,7 +8,6 @@
 // @import '~react-bootstrap-typeahead/css/Typeahead-bs4.css';
 // @import '~react-datepicker/dist/react-datepicker.css';
 
-
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 
@@ -22,7 +21,6 @@
 /* === Icon fonts === */
 @import "~@mdi/font/scss/materialdesignicons";
 
-
 /* === Template mixins === */
 @import "../assets/styles/mixins/animation";
 @import "../assets/styles/mixins/badges";
@@ -34,7 +32,6 @@
 @import "../assets/styles/mixins/popovers";
 @import "../assets/styles/mixins/tooltips";
 @import "../assets/styles/mixins/no-ui-slider";
-
 
 /* === Core Styles === */
 @import "../assets/styles/background";
@@ -161,8 +158,8 @@ input[type="checkbox"].big-checkbox {
 }
 
 label[for="file"] {
-    max-width: 100%;
-    min-width: 0 !important;
+  max-width: 100%;
+  min-width: 0 !important;
 }
 
 .btn-close {
@@ -178,4 +175,9 @@ label[for="file"] {
 
   // no border
   border-radius: 5px;
+}
+
+select,
+option {
+  @extend .text-dark;
 }

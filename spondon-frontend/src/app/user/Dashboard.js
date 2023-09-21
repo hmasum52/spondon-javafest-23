@@ -76,8 +76,8 @@ function UserProfile() {
                     src={profile.imageURL}
                     className="rounded-circle mb-3 mr-3"
                     style={{
-                      height: "100px",
-                      width: "100px",
+                      maxHeight: "8rem",
+                      maxWidth: "8rem",
                       position: "absolute",
                       bottom: "0",
                       right: "0",

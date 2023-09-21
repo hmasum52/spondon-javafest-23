@@ -238,13 +238,13 @@ export default function UploadDocument() {
                       handleChange={(file) => {
                         (async () => {
                           const hash = await getHash(file);
-                          setFileDetails({
+                          setFileDetails((fileDetails) => ({
                             ...fileDetails,
                             file: file,
                             name: file.name,
                             creationDate: file.lastModifiedDate.getTime(),
                             hash: hash,
-                          });
+                          }));
                           toast.promise(
                             new Promise((resolve, reject) => {
                               (async () => {
@@ -257,10 +257,10 @@ export default function UploadDocument() {
                                   "What is this medical document about?"
                                 );
                                 console.log("about: ", about);
-                                setFileDetails({
+                                setFileDetails((fileDetails) => ({
                                   ...fileDetails,
                                   summary: about,
-                                });
+                                }));
                                 resolve("Document analyzed successfully!");
                                 removeFromChatPdf(sourceId);
                               })().catch((e) => {

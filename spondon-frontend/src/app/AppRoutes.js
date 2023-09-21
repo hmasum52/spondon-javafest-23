@@ -21,6 +21,7 @@ const ViewDocuments = lazy(() => import("./user/OwnedDocuments"));
 const PendingDocuments = lazy(() => import("./user/NotAcceptedDocuments"));
 const Collections = lazy(() => import("./user/Collections"));
 const SharedByMe = lazy(() => import("./user/SharedByMe"));
+const UserSettings = lazy(() => import("./user/UserSettings"));
 
 const AdminHome = lazy(() => import("./admin/Dashboard"));
 const AddDoctor = lazy(() => import("./admin/AddDoctor"));
@@ -51,6 +52,7 @@ export default function AppRoutes() {
                 <Route path="/user/collections" component={Collections} exact />
                 <Route path="/user/collections/:id" component={Collections} />
                 <Route path="/user/shared" component={SharedByMe} />
+                <Route path="/user/settings" component={UserSettings} />
                 <Redirect to="/user/dashboard" />
               </Switch>
             )}
@@ -68,8 +70,15 @@ export default function AppRoutes() {
                 <Route path="/doctor/dashboard" component={DoctorHome} />
                 <Route path="/doctor/documents/add" component={AddDocument} />
                 <Route path="/doctor/documents/view" component={SharedWithMe} />
-                <Route path="/doctor/documents/uploaded" component={UploadedByDoctor} />
-                <Route path="/doctor/collections" component={Collections} exact />
+                <Route
+                  path="/doctor/documents/uploaded"
+                  component={UploadedByDoctor}
+                />
+                <Route
+                  path="/doctor/collections"
+                  component={Collections}
+                  exact
+                />
                 <Route path="/doctor/collections/:id" component={Collections} />
                 <Redirect to="/doctor/dashboard" />
               </Switch>
