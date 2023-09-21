@@ -6,10 +6,13 @@ import { Modal, OverlayTrigger, Popover, Tooltip } from "react-bootstrap";
 import Document from "./Document";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
-export const formatDateFromTimestamp = (timestamp, dateOnly = false) => {
+export const formatDateFromTimestamp = (
+  timestamp,
+  { timeStyle, dateStyle } = { timeStyle: "short", dateStyle: "short" }
+) => {
   return new Intl.DateTimeFormat("en-BD", {
-    dateStyle: "short",
-    timeStyle: dateOnly ? "none" : "short",
+    dateStyle,
+    timeStyle,
     timeZone: "Asia/Dhaka",
     hourCycle: "h12",
   }).format(new Date(timestamp));
@@ -73,6 +76,7 @@ export default function SharedByMe() {
                       {/* <th> Uploaded By </th> */}
                       <th> Security </th>
                       <th> Collection </th>
+                      <th> Shared By </th>
                       <th> Shared To </th>
                       <th> Share Date </th>
                       <th> Revoke </th>
@@ -102,6 +106,7 @@ export default function SharedByMe() {
                           )}
                         </td>
                         <td>{share.document.collection?.name}</td>
+                        <td>{share.sharedBy.username}</td>
                         <td>{share.sharedTo.username}</td>
                         <td>{formatDateFromTimestamp(share.shareTime)}</td>
                         <td>

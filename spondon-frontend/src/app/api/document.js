@@ -25,38 +25,38 @@ export const acceptDocument = async (id) =>
   axios.put(api_url(`/user/document/approve/${id}`)).then((res) => res.data);
 
 export const getCollections = async () =>
-  axios.get(api_url(`/user/document/collections`)).then((res) => res.data);
+  axios.get(api_url(`/common/collections`)).then((res) => res.data);
 
 export const setToCollection = async (documentId, collectionId) =>
   axios
-    .put(api_url(`/user/document/set-collection/${documentId}`), {
+    .put(api_url(`/common/set-collection/${documentId}`), {
       id: collectionId,
     })
     .then((res) => res.data);
 
 export const addCollection = async (name) =>
   axios
-    .post(api_url(`/user/document/collection`), { name })
+    .post(api_url(`/common/collection`), { name })
     .then((res) => res.data);
 
 export const editCollection = async (id, name) =>
   axios
-    .put(api_url(`/user/document/collection/${id}`), { name })
+    .put(api_url(`/common/collection/${id}`), { name })
     .then((res) => res.data);
 
 export const deleteCollection = async (id) =>
   axios
-    .delete(api_url(`/user/document/collection/${id}`))
+    .delete(api_url(`/common/collection/${id}`))
     .then((res) => res.data);
 
 export const getCollectionDocuments = async (id, page) =>
   axios
-    .get(api_url(`/user/document/collection/${id}?page=${page}`))
+    .get(api_url(`/common/collection/${id}?page=${page}`))
     .then((res) => res.data);
 
 export const shareDocument = async (userId, documents) =>
   axios
-    .post(api_url(`/user/document/share/${userId}`), documents)
+    .post(api_url(`/common/share/${userId}`), documents)
     .then((res) => res.data);
 
 export const getSharedDocuments = async (page) =>

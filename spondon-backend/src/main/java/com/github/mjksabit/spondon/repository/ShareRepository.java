@@ -16,6 +16,8 @@ public interface ShareRepository extends PagingAndSortingRepository<SharedDocume
 
     boolean existsByDocumentIdAndSharedToIdAndRevokeTimeIsNull(Long documentId, Long sharedToId);
 
+    SharedDocument findByDocumentIdAndSharedToIdAndRevokeTimeIsNull(Long documentId, Long sharedToId);
+
     Slice<SharedDocument> findAllByDocumentOwnerUserUsername(String username, Pageable pageable);
 
     List<SharedDocument> findAllBySharedByAndRevokeTimeIsNull(User user);

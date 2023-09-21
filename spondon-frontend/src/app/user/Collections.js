@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   addCollection,
   deleteCollection,
@@ -15,8 +15,10 @@ import { ListGroup, Modal } from "react-bootstrap";
 import { useQuery } from "./OwnedDocuments";
 import ListDocuments from "./ListDocuments";
 import ShareModal from "./ShareModal";
+import { UserContext } from "../App";
 
 export default function Collections() {
+  const { user } = useContext(UserContext);
   const [collections, setCollections] = useState([]);
   const history = useHistory();
   const { id } = useParams();
@@ -71,7 +73,19 @@ export default function Collections() {
       setNewName(collection.name);
       toast.promise(
         getCollectionDocuments(collection.id, page).then((res) => {
-          setDocuments(res.content);
+          if (user.role === "ROLE_USER") setDocuments(res.content);
+          else
+            setDocuments(
+              res.content.map((sd) => ({
+                ...sd.document,
+                id: sd.id,
+                aesKey: sd.aesKey,
+                sharedBy: sd.sharedBy,
+                sharedTo: sd.sharedTo,
+                shareTime: sd.shareTime,
+                collection: sd.collection,
+              }))
+            );
           setFirst(res.first);
           setLast(res.last);
         }),
@@ -87,6 +101,8 @@ export default function Collections() {
     }
   }, [collection]);
 
+  const baseLocation = user.role === "ROLE_USER" ? "/user" : "/doctor";
+
   return (
     <div>
       <div className="page-header">
@@ -98,7 +114,7 @@ export default function Collections() {
                 href="!#"
                 onClick={(event) => {
                   event.preventDefault();
-                  history.push("/user/collections");
+                  history.push(baseLocation + "/collections");
                 }}
               >
                 Collections
@@ -141,7 +157,7 @@ export default function Collections() {
                 action
                 active={collection.id === Number.parseInt(id)}
                 onClick={() => {
-                  history.push(`/user/collections/${collection.id}`);
+                  history.push(`${baseLocation}/collections/${collection.id}`);
                 }}
               >
                 {collection.name}
@@ -160,7 +176,7 @@ export default function Collections() {
                       <button
                         className="btn btn-outline-info btn-icon"
                         onClick={() => {
-                          history.push(`/user/collections`);
+                          history.push(`${baseLocation}/collections`);
                         }}
                       >
                         <i className="mdi mdi-arrow-left"></i>
@@ -259,7 +275,7 @@ export default function Collections() {
                           collections.filter((c) => c.id !== collection.id)
                         );
                         setShowDeleteModal(false);
-                        history.push("/user/collections");
+                        history.push(baseLocation + "/collections");
                       }),
                       {
                         loading: "Deleting collection",

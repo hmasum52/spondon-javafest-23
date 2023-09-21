@@ -26,6 +26,7 @@ const AdminHome = lazy(() => import("./admin/Dashboard"));
 const AddDoctor = lazy(() => import("./admin/AddDoctor"));
 
 const DoctorHome = lazy(() => import("./doctor/Dashboard"));
+const SharedWithMe = lazy(() => import("./doctor/SharedWithMe"));
 
 export default function AppRoutes() {
   const { user } = useContext(UserContext);
@@ -65,6 +66,9 @@ export default function AppRoutes() {
               <Switch>
                 <Route path="/doctor/dashboard" component={DoctorHome} />
                 <Route path="/doctor/documents/add" component={AddDocument} />
+                <Route path="/doctor/documents/view" component={SharedWithMe} />
+                <Route path="/doctor/collections" component={Collections} exact />
+                <Route path="/doctor/collections/:id" component={Collections} />
                 <Redirect to="/doctor/dashboard" />
               </Switch>
             )}

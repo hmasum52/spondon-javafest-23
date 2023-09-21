@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static com.github.mjksabit.spondon.service.AuthService.ROLE_DOCTOR;
 
@@ -51,6 +52,9 @@ public class DocumentService {
 
     @Autowired
     ShareRepository shareRepository;
+
+    @Autowired
+    DoctorUserService doctorUserService;
 
     public void saveDocument(JSONObject data, String owner, String uploader) {
         Document document = new Document();
@@ -110,20 +114,35 @@ public class DocumentService {
         collectionRepository.save(collection);
     }
 
-    public boolean setToCollection(String username, long id, long collectionId) {
-        Document document = documentRepository.findById(id).orElse(null);
-        if (document == null) return false;
-        if (!document.getOwner().getUser().getUsername().equalsIgnoreCase(username))
-            return false;
+    public void setToCollection(String username, long id, long collectionId) throws Exception {
+        User user = userRepository.findUserByUsernameIgnoreCase(username);
+        if (user == null)
+            throw new Exception("User not found");
 
         DocumentCollection collection = null;
         if (collectionId != 0) {
-            collection = collectionRepository.findById(collectionId).orElse(null);
-            if (collection == null) return false;
+            collection = collectionRepository.findById(collectionId).orElseThrow(
+                    () -> new Exception("Collection not found")
+            );
+
+            if (!collection.getOwner().equals(user))
+                throw new Exception("You are not the owner of the collection");
         }
+
+        if (user.getRole().equals(AuthService.ROLE_DOCTOR)) {
+            doctorUserService.setToCollection(username, id, collection);
+            return;
+        }
+
+        Document document = documentRepository.findById(id).orElseThrow(
+                () -> new Exception("Document not found")
+        );
+
+        if (!document.getOwner().getUser().getUsername().equalsIgnoreCase(username))
+            throw new Exception("You are not the owner of the document");
+
         document.setCollection(collection);
         documentRepository.save(document);
-        return true;
     }
 
     public boolean updateCollection(String username, long id, String name) {
@@ -145,18 +164,30 @@ public class DocumentService {
         return true;
     }
 
-    public Slice<Document> getCollectionDocuments(String username, Long id, int page) {
-        return documentRepository.findAllByOwnerUserUsernameAndCollectionOwnerUsernameAndCollectionId(
+    public Slice<?> getCollectionDocuments(String username, Long id, int page) {
+        User user = userRepository.findUserByUsernameIgnoreCase(username);
+
+        if (user.getRole().equals(AuthService.ROLE_DOCTOR))
+            return doctorUserService.getCollectionDocuments(username, id, page);
+        else
+            return documentRepository.findAllByOwnerUserUsernameAndCollectionOwnerUsernameAndCollectionId(
                 username, username, id,
                 PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending())
-        );
+            );
     }
 
     @Transactional
     public void shareUserDocument(String owner, JSONArray listOfShare, long doctorUserId) throws Exception {
+
+        User sharer = userRepository.findUserByUsernameIgnoreCase(owner);
+        if (sharer.getRole().equals(AuthService.ROLE_DOCTOR)) {
+            doctorUserService.shareUserDocument(owner, listOfShare, doctorUserId);
+            return;
+        }
+
         User doctorUser = userRepository.findById(doctorUserId).orElseThrow();
         if (!doctorUser.getRole().equals(ROLE_DOCTOR))
-            throw new Exception("User is not a Doctor");
+            throw new Exception("SharedTo is not a Doctor");
 
         for (int i = 0; i < listOfShare.length(); i++) {
             JSONObject object = listOfShare.getJSONObject(i);
@@ -166,15 +197,19 @@ public class DocumentService {
             if (!document.getOwner().getUser().getUsername().equalsIgnoreCase(owner))
                 throw new Exception("You are not the owner of the document");
 
-            if (shareRepository.existsByDocumentIdAndSharedToIdAndRevokeTimeIsNull(id, doctorUserId))
-                continue;
-
             SharedDocument sharedDocument = new SharedDocument();
-            sharedDocument.setDocument(document);
-            sharedDocument.setSharedTo(doctorUser);
+            if (shareRepository.existsByDocumentIdAndSharedToIdAndRevokeTimeIsNull(id, doctorUserId)) {
+                sharedDocument = shareRepository.findByDocumentIdAndSharedToIdAndRevokeTimeIsNull(id, doctorUserId);
+                if (Objects.equals(sharedDocument.getSharedBy().getId(), document.getOwner().getId()))
+                    continue;
+            } else {
+                sharedDocument.setDocument(document);
+                sharedDocument.setSharedTo(doctorUser);
+                sharedDocument.setShareTime(new Date());
+            }
+
             sharedDocument.setSharedBy(document.getOwner().getUser());
             sharedDocument.setAesKey(object.getString("aesKey"));
-            sharedDocument.setShareTime(new Date());
             shareRepository.save(sharedDocument);
         }
     }
@@ -189,7 +224,7 @@ public class DocumentService {
     @Transactional
     public void revokeDocument(String username, long id) throws Exception {
         SharedDocument document = shareRepository.findById(id).orElseThrow();
-        if (!document.getSharedBy().getUsername().equals(username) ||
+        if (!document.getSharedBy().getUsername().equals(username) &&
                 !document.getDocument().getOwner().getUser().getUsername().equals(username))
             throw new Exception("You have no access to the document");
 
@@ -198,7 +233,7 @@ public class DocumentService {
         for (int i = 0; i < shareTree.size(); i++) {
             List<SharedDocument> list = shareTree.get(i);
 
-            for (SharedDocument sharedDocument: list) {
+            for (SharedDocument sharedDocument : list) {
                 sharedDocument.setRevokeTime(new Date());
                 shareRepository.save(sharedDocument);
                 List<SharedDocument> sharedDocuments = shareRepository.findAllBySharedByAndRevokeTimeIsNull(sharedDocument.getSharedTo());

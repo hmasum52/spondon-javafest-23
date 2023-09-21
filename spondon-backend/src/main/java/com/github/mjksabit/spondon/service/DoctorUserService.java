@@ -64,21 +64,16 @@ public class DoctorUserService {
     }
 
 
-    public boolean setToCollection(String username, long id, long collectionId) {
-        DocumentCollection collection = null;
-        if (collectionId != 0) {
-            collection = collectionRepository.findById(collectionId).orElse(null);
-            if (collection == null) return false;
-        }
+    public void setToCollection(String username, long id, DocumentCollection collection) throws Exception {
+        SharedDocument document = shareRepository.findById(id).orElseThrow(
+                () -> new Exception("Shared Document not found")
+        );
 
-        SharedDocument document = shareRepository.findById(id).orElse(null);
-        if (document == null) return false;
         if (!document.getSharedTo().getUsername().equalsIgnoreCase(username))
-            return false;
+            throw new Exception("You have no access to the document");
 
         document.setCollection(collection);
         shareRepository.save(document);
-        return true;
     }
 
     public Slice<SharedDocument> getCollectionDocuments(String username, long id, int page) {

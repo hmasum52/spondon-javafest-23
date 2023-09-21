@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { acceptDocument } from "../api/document";
 import { useState } from "react";
 import ShareModal from "./ShareModal";
+import { formatDateFromTimestamp } from "./SharedByMe";
 
 export async function downloadFromFirebase(documentId) {
   const storageRef = ref(storage, `documents/${documentId}`);
@@ -63,12 +64,24 @@ export default function Document({
             </div>
             <div className="col-md-6">
               <p className="text-muted">Created At</p>
-              <p>{new Date(document.creationTime).toUTCString()}</p>
+              <p>{formatDateFromTimestamp(document.creationTime, {dateStyle: "medium", timeStyle: "short"})}</p>
             </div>
             <div className="col-md-6">
               <p className="text-muted">Uploaded At</p>
-              <p>{new Date(document.uploadTime).toUTCString()}</p>
+              <p>{formatDateFromTimestamp(document.uploadTime, {dateStyle: "medium", timeStyle: "short"})}</p>
             </div>
+            {document.sharedTo && (
+              <>
+                <div className="col-md-6">
+                  <p className="text-muted">Shared By</p>
+                  <p>{document.sharedBy.username}</p>
+                </div>
+                <div className="col-md-6">
+                  <p className="text-muted">Shared At</p>
+                  <p>{formatDateFromTimestamp(document.uploadTime, {dateStyle: "medium", timeStyle: "short"})}</p>
+                </div>
+              </>
+            )}
           </div>
 
           {document?.accepted && !dialog && (
