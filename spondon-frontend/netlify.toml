@@ -1,6 +1,6 @@
 [build]
-  command = "npm run build"
-  publish="./spondon-frontend/build"
+  command = "npm run build; ls build"
+  publish="./build"
   base = "./spondon-frontend"
 
 [[redirects]]
