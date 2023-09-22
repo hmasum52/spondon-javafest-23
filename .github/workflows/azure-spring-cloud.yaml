@@ -1,7 +1,7 @@
 name: AzureSpringCloud
 on:
   push:
-    branches: [ deploy-backend ]
+    branches: [ master ]
     paths: ['spondon-backend/**']
 env:
   ASC_PACKAGE_PATH: ${{ github.workspace }}
