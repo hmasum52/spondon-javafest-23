@@ -11,9 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.github.mjksabit.spondon.service.AuthService.ROLE_DOCTOR;
-import static com.github.mjksabit.spondon.service.AuthService.ROLE_HOSPITAL;
-
 @Service
 public class UserService {
 
@@ -30,6 +27,9 @@ public class UserService {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private UserLogService userLogService;
+
 
     public void save(User user, String role) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -39,7 +39,7 @@ public class UserService {
 
 
     public User findByUsername(String username) {
-        return userRepository.findUserByUsernameIgnoreCase(username);
+        return userRepository.findUserByUsername(username);
     }
 
     public User findByEmail(String email) {
@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public User login(String username, String password) {
-        return userRepository.findUserByUsernameIgnoreCase(username);
+        return userRepository.findUserByUsername(username);
     }
 
     /**
@@ -79,18 +79,21 @@ public class UserService {
     }
 
     public boolean hasUser(User user) {
-        return userRepository.countUserByEmailOrUsernameIgnoreCase(user.getEmail(), user.getUsername()) > 0;
+        return userRepository.countUserByEmailOrUsername(user.getEmail(), user.getUsername()) > 0;
     }
 
     public boolean updatePublicKey(String username, String publicKey) {
-        User user = userRepository.findUserByUsernameIgnoreCase(username);
+        User user = userRepository.findUserByUsername(username);
         user.setPublicKey(publicKey);
         userRepository.save(user);
+
+        userLogService.notify(user, "[PUBKEY_UPDATE] Updated Public Key");
+
         return true;
     }
 
     public boolean updatePassword(String username, String oldPassword, String newPassword) {
-        User user = userRepository.findUserByUsernameIgnoreCase(username);
+        User user = userRepository.findUserByUsername(username);
         if (matchPassword(user, oldPassword)) {
             user.setPassword(bCryptPasswordEncoder.encode(newPassword));
             userRepository.save(user);
@@ -100,7 +103,7 @@ public class UserService {
     }
 
     public boolean updateUsernameEmail(String username, String newUsername, String newEmail) {
-        User user = userRepository.findUserByUsernameIgnoreCase(username);
+        User user = userRepository.findUserByUsername(username);
         if (user == null) return false;
         user.setUsername(newUsername);
         user.setEmail(newEmail);
@@ -114,11 +117,11 @@ public class UserService {
     }
 
     public User getUserDetails(String username) {
-        return userRepository.findUserByUsernameIgnoreCase(username);
+        return userRepository.findUserByUsername(username);
     }
 
     public String getRole(String username) {
-        return userRepository.findUserByUsernameIgnoreCase(username).getRole();
+        return userRepository.findUserByUsername(username).getRole();
     }
 
     public List<DoctorUser> getDoctors() {

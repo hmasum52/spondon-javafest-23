@@ -82,6 +82,9 @@ public class AuthService {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private UserLogService userLogService;
+
     public JSONObject login(JSONObject loginData) throws DisabledException, BadCredentialsException {
         String username = loginData.getString(USERNAME_KEY);
         String password = loginData.getString(PASSWORD_KEY);
@@ -95,6 +98,8 @@ public class AuthService {
 
         JSONObject data = new JSONObject();
         data.put(JWT_KEY, token);
+
+        userLogService.log(username, "Logged In");
 
         return data;
     }
@@ -153,11 +158,13 @@ public class AuthService {
             patientUser.setUser(user);
             logger.log(Level.INFO, "User Activated: {}", patientUser);
             patientUserService.save(patientUser);
+            userLogService.log(user, "Activated");
             return true;
         } catch (Exception e) {
             logger.log(Level.ERROR, "User Activation Failed: {}", e.getMessage());
             return false;
         }
+
     }
 
     public boolean forgotPassword(JSONObject data) {
@@ -177,6 +184,8 @@ public class AuthService {
                         FRONTEND_URL+"/auth/forget-password?token="+jwtVerification
         );
 
+        userLogService.notify(user, "Forgot Password Request");
+
         return true;
     }
 
@@ -191,6 +200,9 @@ public class AuthService {
         User user = userService.findByUsername(username);
         user.setPassword(password);
         userService.saveWithRawPassword(user);
+
+        userLogService.log(user, "Password Reset Success");
+
         return true;
     }
 
@@ -232,6 +244,8 @@ public class AuthService {
             logger.log(Level.ERROR, "Doctor Activation Failed: {}", e.getMessage());
             return false;
         }
+
+        userLogService.log(user, "Doctor Account Activated");
 
         return true;
     }

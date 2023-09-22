@@ -29,6 +29,9 @@ public class CommonUserController {
     @Autowired
     DocumentService documentService;
 
+    @Autowired
+    UserLogService userLogService;
+
     @JsonView(View.ExtendedPublic.class)
     @GetMapping(path = "/possible-owners")
     public ResponseEntity<?> getPossibleOwners(@RequestHeader("Authorization") String bearerToken) {
@@ -162,5 +165,13 @@ public class CommonUserController {
             logger.warning(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping(path = "/logs")
+    public ResponseEntity<?> getLogs(@RequestHeader("Authorization") String bearerToken,
+                                     @RequestParam(required = false, defaultValue = "0") int page) {
+        String jwt = bearerToken.substring(7);
+        String username = jwtTokenUtil.getUsernameFromToken(jwt);
+        return ResponseEntity.ok(userLogService.getLogs(username, page));
     }
 }

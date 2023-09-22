@@ -40,6 +40,9 @@ public class DoctorUserService {
     @Autowired
     private PatientUserRepository patientUserRepository;
 
+    @Autowired
+    private UserLogService userLogService;
+
     public DoctorUser retrieve(DoctorUser user, JSONObject data) {
         user.setName(data.getString(NAME_KEY));
         user.setRegistrationNumber(data.getLong(REGISTRATION_KEY));
@@ -110,6 +113,21 @@ public class DoctorUserService {
             sharedDocument.setAesKey(object.getString("aesKey"));
             sharedDocument.setShareTime(new Date());
             shareRepository.save(sharedDocument);
+
+            userLogService.notify(
+                    doctorUser,
+                    String.format("[DOC_SHARE] Document (%s) Shared by Doctor (%s)", document.getDocument().getName(), username)
+            );
+
+            userLogService.log(
+                    document.getSharedTo(),
+                    String.format("[DOC_SHARE] Document (%s) Shared to Doctor (%s)", document.getDocument().getName(), doctorUser.getUsername())
+            );
+
+            userLogService.notify(
+                    document.getDocument().getOwner().getUser(),
+                    String.format("[DOC_SHARE] Document (%s) Shared to Doctor (%s) by Doctor (%s)", document.getDocument().getName(), doctorUser.getUsername(), username)
+            );
         }
     }
 
@@ -117,13 +135,10 @@ public class DoctorUserService {
         PatientUser patientUser = patientUserRepository.findPatientUserByUserUsername(patient);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("emergencyProfile", patientUser.getEmergencyProfile());
-
-        UserLog patientLog = new UserLog();
-        patientLog.setLog(String.format("[EMG_PRO_ACCESS] Emergency Profile Accessed by Doctor (%s)", username));
-        patientLog.setUser(patientUser.getUser());
-        patientLog.setNotification(true);
-        userLogRepository.save(patientLog);
-
+        userLogService.notify(
+                patientUser.getUser(),
+                String.format("[EMG_PRO_ACCESS] Emergency Profile Accessed by Doctor (%s)", username)
+        );
         return jsonObject;
     }
 

@@ -56,6 +56,9 @@ public class DocumentService {
     @Autowired
     DoctorUserService doctorUserService;
 
+    @Autowired
+    UserLogService userLogService;
+
     public void saveDocument(JSONObject data, String owner, String uploader) {
         Document document = new Document();
         document.setDocumentId(data.getString(DOCUMENT_ID_KEY));
@@ -74,7 +77,7 @@ public class DocumentService {
             anonymousDataRepository.save(anonymousData);
 
         document.setOwner(patientUserRepository.findPatientUserByUserUsername(owner));
-        document.setUploader(userRepository.findUserByUsernameIgnoreCase(uploader));
+        document.setUploader(userRepository.findUserByUsername(uploader));
         document.setAccepted(owner.equalsIgnoreCase(uploader));
         documentRepository.save(document);
     }
@@ -110,12 +113,12 @@ public class DocumentService {
     public void createCollection(String username, String name) {
         DocumentCollection collection = new DocumentCollection();
         collection.setName(name);
-        collection.setOwner(userRepository.findUserByUsernameIgnoreCase(username));
+        collection.setOwner(userRepository.findUserByUsername(username));
         collectionRepository.save(collection);
     }
 
     public void setToCollection(String username, long id, long collectionId) throws Exception {
-        User user = userRepository.findUserByUsernameIgnoreCase(username);
+        User user = userRepository.findUserByUsername(username);
         if (user == null)
             throw new Exception("User not found");
 
@@ -165,7 +168,7 @@ public class DocumentService {
     }
 
     public Slice<?> getCollectionDocuments(String username, Long id, int page) {
-        User user = userRepository.findUserByUsernameIgnoreCase(username);
+        User user = userRepository.findUserByUsername(username);
 
         if (user.getRole().equals(AuthService.ROLE_DOCTOR))
             return doctorUserService.getCollectionDocuments(username, id, page);
@@ -179,7 +182,7 @@ public class DocumentService {
     @Transactional
     public void shareUserDocument(String owner, JSONArray listOfShare, long doctorUserId) throws Exception {
 
-        User sharer = userRepository.findUserByUsernameIgnoreCase(owner);
+        User sharer = userRepository.findUserByUsername(owner);
         if (sharer.getRole().equals(AuthService.ROLE_DOCTOR)) {
             doctorUserService.shareUserDocument(owner, listOfShare, doctorUserId);
             return;
@@ -211,6 +214,11 @@ public class DocumentService {
             sharedDocument.setSharedBy(document.getOwner().getUser());
             sharedDocument.setAesKey(object.getString("aesKey"));
             shareRepository.save(sharedDocument);
+
+            userLogService.notify(
+                    doctorUser,
+                    "[DOCUMENT_SHARE] " + owner + " shared a document with you"
+            );
         }
     }
 

@@ -62,3 +62,6 @@ export const getSharedDocuments = async (page) =>
 
 export const verifyDocuemnt = async (hash) =>
   axios.get(api_url(`/public/verify/${hash}`)).then((res) => res.data);
+
+export const getLogs = async (page) =>
+  axios.get(api_url(`/common/logs?page=${page}`)).then((res) => res.data);

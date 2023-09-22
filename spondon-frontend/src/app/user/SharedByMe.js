@@ -10,6 +10,7 @@ export const formatDateFromTimestamp = (
   timestamp,
   style = { timeStyle: "short", dateStyle: "short" }
 ) => {
+  if (!timestamp) return "Invalid DateTime"
   return new Intl.DateTimeFormat("en-BD", {
     ...style,
     timeZone: "Asia/Dhaka",
