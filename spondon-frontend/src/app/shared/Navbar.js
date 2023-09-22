@@ -2,6 +2,9 @@ import { useContext } from "react";
 import { Dropdown } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import { UserContext } from "../App";
+import { useEffect } from "react";
+import { getProfile } from "../api/user";
+import { useState } from "react";
 
 function Navbar() {
   const history = useHistory();
@@ -15,6 +18,16 @@ function Navbar() {
   };
 
   const { user, setUser } = useContext(UserContext);
+  const [imageURL, setImageURL] = useState("");
+
+  useEffect(() => {
+    console.log("user: ", user);
+    if (user?.role === "ROLE_USER") {
+      getProfile().then((res) => {
+        setImageURL(res.imageURL);
+      });
+    }
+  }, [user?.username]);
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -57,8 +70,7 @@ function Navbar() {
                 <div className="nav-profile-img">
                   <img
                     src={
-                      user?.image ||
-                      require("../../assets/images/faces/face1.jpg")
+                      imageURL || require("../../assets/images/faces/face1.jpg")
                     }
                     alt="user"
                   />

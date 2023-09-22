@@ -7,14 +7,17 @@ import { useContext } from "react";
 import { UserContext, parseUserFromJwt } from "../App";
 import { validate } from "./validate";
 
-export const USERNAME_DETAILS = "Username must be between 6 and 30 characters long and can only contain alphanumeric characters and underscores, starting with an alphabet.";
+export const USERNAME_DETAILS =
+  "Username must be between 6 and 30 characters long and can only contain alphanumeric characters and underscores, starting with an alphabet.";
 export const USERNAME_REGEX = /^[a-zA-Z]\w{5,29}$/;
 
-export const PASSWORD_DETAILS = "Password must be between 8 and 20 characters long.";
+export const PASSWORD_DETAILS =
+  "Password must be between 8 and 20 characters long.";
 export const PASSWORD_REGEX = /^.{8,20}$/;
 
 export const EMAIL_DETAILS = "Email must be a valid email address.";
-export const EMAIL_REGEX = /^[\w!#$%&'*+/=?`{|}~^-]+(?:\.[\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
+export const EMAIL_REGEX =
+  /^[\w!#$%&'*+/=?`{|}~^-]+(?:\.[\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
 
 export function Login() {
   const { setUser } = useContext(UserContext);
@@ -25,24 +28,26 @@ export function Login() {
     const usernameValue = usernameRef.current.value;
     const passwordValue = passwordRef.current.value;
 
-    const err = validate({username: usernameValue, password: passwordValue})
+    const err = validate({ username: usernameValue, password: passwordValue });
 
     if (err) {
       toast.error(err);
     } else {
       const toastId = toast.loading("Logging in...", { duration: 5000 });
-      login(usernameValue, passwordValue).then((res) => {
-        toast.dismiss(toastId);
-        toast.success("Logged in successfully!");
-        console.log(res);
-        localStorage.setItem("token", res.jwt);
-        setUser(parseUserFromJwt(res.jwt));
-      }).catch((err) => {
-        toast.dismiss(toastId);
-        toast.error("Login failed!");
-      });
+      login(usernameValue, passwordValue)
+        .then((res) => {
+          toast.dismiss(toastId);
+          toast.success("Logged in successfully!");
+          console.log(res);
+          localStorage.setItem("token", res.jwt);
+          setUser(parseUserFromJwt(res.jwt));
+        })
+        .catch((err) => {
+          toast.dismiss(toastId);
+          toast.error("Login failed!");
+        });
     }
-  }
+  };
 
   return (
     <div>
@@ -86,13 +91,13 @@ export function Login() {
                   </Button>
                 </div>
                 <div className="my-2 d-flex justify-content-between align-items-center">
-                  <div className="form-check">
-                    {/* <label className="form-check-label text-muted">
+                  {/* <div className="form-check"> */}
+                  {/* <label className="form-check-label text-muted">
                       <input type="checkbox" className="form-check-input" />
                       <i className="input-helper"></i>
                       Keep me signed in
                     </label> */}
-                  </div>
+                  {/* </div> */}
                   <Link
                     to="/auth/forget-password"
                     className="auth-link text-black"
@@ -104,6 +109,14 @@ export function Login() {
                   Don't have an account?{" "}
                   <Link to="/auth/register" className="text-primary">
                     Create
+                  </Link>
+                </div>
+                <div className="mt-3">
+                  <Link
+                    className="btn btn-block btn-inverse-success btn-lg font-weight-medium auth-form-btn"
+                    to="/verify"
+                  >
+                    Verify Documents
                   </Link>
                 </div>
               </Form>

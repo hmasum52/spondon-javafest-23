@@ -3,14 +3,19 @@ package com.github.mjksabit.spondon.controller;
 
 import com.github.mjksabit.spondon.service.AuthService;
 import com.github.mjksabit.spondon.service.UserService;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.logging.Logger;
+
 @RestController
 @RequestMapping("/api/v1/admin")
 public class AdminController {
+
+    private static final Logger logger = Logger.getLogger(AdminController.class.getName());
 
     @Autowired
     AuthService authService;
@@ -29,7 +34,23 @@ public class AdminController {
 
     @GetMapping(path = "/users")
     public ResponseEntity<?> getUsers(@RequestParam int page) {
-        return ResponseEntity.ok(userService.getUsers(page));
+        var users = userService.getUsers(page);
+        JSONObject response = new JSONObject();
+        response.put("first", users.isFirst());
+        response.put("last", users.isLast());
+        JSONArray content = new JSONArray();
+        users.getContent().forEach(user -> {
+            JSONObject userJSON = new JSONObject();
+            userJSON.put("id", user.getId());
+            userJSON.put("username", user.getUsername());
+            userJSON.put("email", user.getEmail());
+            userJSON.put("role", user.getRole());
+            userJSON.put("banned", user.getBanned());
+            userJSON.put("active", user.getActive());
+            content.put(userJSON);
+        });
+        response.put("content", content);
+        return ResponseEntity.ok(response.toString());
     }
 
     @PutMapping(path = "/user/{id}")
@@ -40,6 +61,7 @@ public class AdminController {
             userService.setUserBanned(id, banned);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
+            logger.warning(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }

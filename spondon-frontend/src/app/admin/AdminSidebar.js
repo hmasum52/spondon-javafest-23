@@ -254,7 +254,7 @@ function SideBar(props) {
             isPathActive("/admin/users") ? "nav-item active" : "nav-item"
           }
         >
-          <Link className="nav-link" to="/user/logs">
+          <Link className="nav-link" to="/admin/users">
             <span className="menu-title">Users</span>
             <i className="mdi mdi-account menu-icon"></i>
           </Link>

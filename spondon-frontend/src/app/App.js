@@ -5,7 +5,6 @@ import "./App.scss";
 import AppRoutes from "./AppRoutes";
 import Navbar from "./shared/Navbar";
 import Sidebar from "./shared/Sidebar";
-import SettingsPanel from "./shared/SettingsPanel";
 import Footer from "./shared/Footer";
 import "./App.css";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
@@ -15,6 +14,7 @@ import { isCursorAtEnd } from "@testing-library/user-event/dist/utils";
 import UserSidebar from "./user/UserSidebar";
 import AdminSidebar from "./admin/AdminSidebar";
 import DoctorSidebar from "./doctor/DoctorSidebar";
+import { getProfile } from "./api/user";
 
 export const UserContext = createContext({
   user: undefined,
@@ -50,8 +50,6 @@ function App() {
   const [user, setUser] = useState(
     parseUserFromJwt(localStorage.getItem("token"))
   );
-
-  console.log("user: ", user);
 
   axios.interceptors.response.use(
     (response) => response,
@@ -113,7 +111,7 @@ function App() {
   ) : (
     ""
   );
-  let SettingsPanelComponent = !isFullPageLayout ? <SettingsPanel /> : "";
+  // let SettingsPanelComponent = !isFullPageLayout ? <SettingsPanel /> : "";
   let footerComponent = !isFullPageLayout ? <Footer /> : "";
 
   return (
@@ -125,7 +123,7 @@ function App() {
           <div className="main-panel">
             <div className="content-wrapper">
               <AppRoutes />
-              {SettingsPanelComponent}
+              {/* {SettingsPanelComponent} */}
             </div>
             {footerComponent}
           </div>
