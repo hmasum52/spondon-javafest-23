@@ -65,8 +65,8 @@ public class AdminController {
             for (CoreLabel coreLabel: coreLabelList) {
                 for (String keyword : keywordList) {
                     double sim = nlpService.word2Vec.similarity(keyword.toLowerCase().strip(), coreLabel.originalText().toLowerCase().strip());
-                    logger.info("Similarity between " + keyword + " and " + coreLabel.originalText() + " is " + sim);
                     if(sim>0.55) {
+                        logger.info("Similarity between " + keyword + " and " + coreLabel.originalText() + " is " + sim);
                         return false;
                     }
                 }
