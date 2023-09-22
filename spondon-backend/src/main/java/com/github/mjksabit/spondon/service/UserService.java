@@ -6,6 +6,8 @@ import com.github.mjksabit.spondon.repository.DoctorUserRepository;
 import com.github.mjksabit.spondon.repository.UserRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -126,5 +128,18 @@ public class UserService {
 
     public List<DoctorUser> getDoctors() {
         return doctorUserRepository.findAll();
+    }
+
+    public Slice<User> getUsers(int page) {
+        return userRepository.findAllByRoleNot(
+                AuthService.ROLE_ADMIN,
+                PageRequest.of(page, 30)
+        );
+    }
+
+    public void setUserBanned(long id, boolean banned) {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setBanned(banned);
+        userRepository.save(user);
     }
 }

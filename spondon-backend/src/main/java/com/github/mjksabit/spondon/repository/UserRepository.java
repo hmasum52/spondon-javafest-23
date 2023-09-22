@@ -20,4 +20,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
     User findUserByEmailIgnoreCase(String email);
 
     List<User> findAllByRole(String role);
+
+    Slice<User> findAllByRoleNot(String role, Pageable pageable);
 }
