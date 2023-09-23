@@ -8,10 +8,11 @@ import {
   updateFeature,
 } from "../api/external";
 import { Typeahead } from "react-bootstrap-typeahead";
+import symptomsOutput from "./SymptomsOutput.json";
 
 export default function SymptomChecker() {
   const [sessionID, setSessionID] = useState("");
-  const [allFeatures, setAllFeatures] = useState([]);
+  const [allFeatures, setAllFeatures] = useState(symptomsOutput);
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [featureValues, setFeatureValues] = useState([]);
   const [diseases, setDiseases] = useState([]);
@@ -28,19 +29,28 @@ export default function SymptomChecker() {
   });
 
   const featureValueRef = useRef(null);
+  const [selectedFeatureValue, setSelectedFeatureValue] = useState(null);
+
+  console.log([
+    ...new Set(symptomsOutput.reduce((acc, cur) => [...acc, cur.type], [])),
+  ]);
 
   const addNewFeatureValue = () => {
     const value = featureValueRef.current.value;
     if (value) {
       toast.promise(
-        updateFeature(sessionID, selectedFeature, value).then((suggestions) => {
-          setfeatureSuggestions(suggestions);
-          setFeatureValues([
-            ...featureValues.filter((f) => f.feature !== selectedFeature),
-            { feature: selectedFeature, value },
-          ]);
-          featureValueRef.current.value = "";
-        }),
+        updateFeature(sessionID, selectedFeature.name, value).then(
+          (suggestions) => {
+            setfeatureSuggestions(suggestions);
+            setFeatureValues([
+              ...featureValues.filter(
+                (f) => f.feature.name !== selectedFeature.name
+              ),
+              { feature: selectedFeature, value },
+            ]);
+            featureValueRef.current.value = "";
+          }
+        ),
         {
           loading: "Updating feature",
           success: "Feature updated",
@@ -52,18 +62,18 @@ export default function SymptomChecker() {
     }
   };
 
-  useEffect(() => {
-    toast.promise(
-      getAllFeatures().then((res) => {
-        setAllFeatures(res);
-      }),
-      {
-        loading: "Loading features",
-        success: "Loaded features",
-        error: "Failed loading features",
-      }
-    );
-  }, []);
+  // useEffect(() => {
+  //   toast.promise(
+  //     getAllFeatures().then((res) => {
+  //       setAllFeatures(res);
+  //     }),
+  //     {
+  //       loading: "Loading features",
+  //       success: "Loaded features",
+  //       error: "Failed loading features",
+  //     }
+  //   );
+  // }, []);
 
   return (
     <div>
@@ -91,8 +101,11 @@ export default function SymptomChecker() {
               <Typeahead
                 onChange={(selected) => {
                   setSelectedFeature(selected[0]);
+                  setSelectedFeatureValue(selected[0]?.default);
                 }}
                 options={allFeatures}
+                labelKey={(option) => `[${option.name}] ${option.text}`}
+                filterBy={["text", "name"]}
                 placeholder="Feature"
                 className="flex-grow-1"
               />
@@ -118,22 +131,63 @@ export default function SymptomChecker() {
       {sessionID && (
         <>
           <div className="row">
-            <div className={`col-md-6 grid-margin stretch-card`}>
+            <div className={`col-md-12 grid-margin stretch-card`}>
               <div className="card">
                 <div className="card-body">
                   <h4 className="card-title"> Features </h4>
                   {selectedFeature && (
                     <>
+                      <h5 className="mr-5 my-auto">{selectedFeature.text}</h5>
+                      <p className="text-muted mt-2">
+                        {selectedFeature.laytext}
+                      </p>
                       <div className="d-flex mb-5">
-                        <p className="mr-5 my-auto">{selectedFeature}</p>
-                        <div className="flex-grow-1">
-                          <input
-                            type="text"
-                            className="form-control"
-                            ref={featureValueRef}
-                            placeholder="Value"
-                          />
-                        </div>
+                        {selectedFeature.type !== "categorical" ? (
+                          <>
+                            <span className="my-auto">
+                              {selectedFeatureValue}
+                            </span>
+                            <div className="flex-grow-1 mx-3">
+                              <input
+                                type="range"
+                                className="form-control form-control-lg w-100"
+                                setValue={selectedFeatureValue}
+                                value={selectedFeatureValue}
+                                ref={featureValueRef}
+                                max={selectedFeature.max}
+                                min={selectedFeature.min}
+                                step={selectedFeature.step || 1}
+                                onChange={(e) => {
+                                  setSelectedFeatureValue(
+                                    selectedFeature.type === "integer"
+                                      ? Number.parseInt(e.target.value)
+                                      : Number.parseFloat(e.target.value)
+                                  );
+                                }}
+                                placeholder="Value"
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <select
+                              className="form-control form-control-lg flex-grow-1 mr-3"
+                              value={selectedFeatureValue}
+                              ref={featureValueRef}
+                              onChange={(e) => {
+                                setSelectedFeatureValue(
+                                  Number.parseInt(e.target.value)
+                                );
+                              }}
+                            >
+                              {selectedFeature.choices.map((choice, index) => (
+                                <option key={index} value={choice.value}>
+                                  {choice.laytext}
+                                </option>
+                              ))}
+                            </select>
+                          </>
+                        )}
                         <div className="my-auto">
                           <button
                             className="btn btn-success btn-icon"
@@ -154,10 +208,15 @@ export default function SymptomChecker() {
                         </tr>
                       </thead>
                       <tbody>
-                        {featureValues.map((featureValue, index) => (
+                        {featureValues.map((f, index) => (
                           <tr key={index}>
-                            <td> {featureValue.feature} </td>
-                            <td> {featureValue.value} </td>
+                            <td> {f.feature.text} </td>
+                            <td>
+                              {" "}
+                              {f.feature.type !== "categorical"
+                                ? f.value
+                                : f.feature.choices[f.value - 1].text}{" "}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -166,7 +225,7 @@ export default function SymptomChecker() {
                 </div>
               </div>
             </div>
-            <div className={`col-md-6 grid-margin stretch-card`}>
+            <div className={`col-md-12 grid-margin stretch-card`}>
               <div className="card">
                 <div className="card-body">
                   <h4 className="card-title"> Feature Suggestions </h4>
@@ -268,14 +327,14 @@ export default function SymptomChecker() {
                   >
                     Find Disease
                   </button>
-                  <ul>
+                  <ul className="mt-4">
                     {diseases.map((disease, index) => (
                       <>
                         {Object.keys(disease).map((key, index) => (
                           <li key={index}>
                             {key} (
                             <span className="font-weight-bold">
-                              {disease[key]}
+                              {Number.parseInt(disease[key] * 10000) / 100}%
                             </span>
                             )
                           </li>
