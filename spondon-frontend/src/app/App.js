@@ -4,7 +4,6 @@ import { withRouter } from "react-router-dom";
 import "./App.scss";
 import AppRoutes from "./AppRoutes";
 import Navbar from "./shared/Navbar";
-import Sidebar from "./shared/Sidebar";
 import Footer from "./shared/Footer";
 import "./App.css";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
@@ -105,9 +104,7 @@ function App() {
       <AdminSidebar />
     ) : user?.role === "ROLE_DOCTOR" ? (
       <DoctorSidebar />
-    ) : (
-      <Sidebar />
-    )
+    ) : null
   ) : (
     ""
   );
