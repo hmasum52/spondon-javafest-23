@@ -13,4 +13,15 @@ import java.util.List;
 public interface AnonymousDataRepository extends PagingAndSortingRepository<AnonymousData, Long> {
     @Query("SELECT ad FROM AnonymousData ad WHERE (ad.latitude-:lat)*(ad.latitude-:lat) + (ad.longitude-:lng)*(ad.longitude-:lng) <= :radius*:radius AND ad.time >= :from AND ad.time <= :to")
     List<AnonymousData> getFilteredData(double lat, double lng, double radius, Date from, Date to);
+
+    @Query("select ad from AnonymousData ad " +
+            "where " +
+            "ad.time >= :from and " +
+            "ad.time < :to and " +
+            "ad.latitude >= :latMin and " +
+            "ad.latitude <= :latMax and " +
+            "ad.longitude >= :lngMin and " +
+            "ad.longitude <= :lngMax " +
+            "order by ad.id desc")
+    List<AnonymousData> getFilteredData(double latMin, double latMax, double lngMin, double lngMax, Date from, Date to);
 }

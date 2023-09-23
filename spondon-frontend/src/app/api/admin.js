@@ -12,3 +12,6 @@ export const changeUserBannedStatus = async (id, banned) =>
     method: "PUT",
     data: { banned },
   }).then((res) => res.data);
+
+export const filterAndAnalyze = async (data) =>
+  axios.post(api_url("/admin/filter"), data).then((res) => res.data);
