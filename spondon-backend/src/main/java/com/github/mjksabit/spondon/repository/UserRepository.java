@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
-    User findUserByUsername(String username);
+    User findUserByUsernameIgnoreCase(String username);
 
     int countUserByEmailOrUsername(String email, String username);
 

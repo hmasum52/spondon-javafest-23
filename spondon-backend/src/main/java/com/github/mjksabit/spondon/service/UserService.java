@@ -41,7 +41,7 @@ public class UserService {
 
 
     public User findByUsername(String username) {
-        return userRepository.findUserByUsername(username);
+        return userRepository.findUserByUsernameIgnoreCase(username);
     }
 
     public User findByEmail(String email) {
@@ -49,7 +49,7 @@ public class UserService {
     }
 
     public User login(String username, String password) {
-        return userRepository.findUserByUsername(username);
+        return userRepository.findUserByUsernameIgnoreCase(username);
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserService {
     }
 
     public boolean updatePublicKey(String username, String publicKey) {
-        User user = userRepository.findUserByUsername(username);
+        User user = userRepository.findUserByUsernameIgnoreCase(username);
         user.setPublicKey(publicKey);
         userRepository.save(user);
 
@@ -95,7 +95,7 @@ public class UserService {
     }
 
     public boolean updatePassword(String username, String oldPassword, String newPassword) {
-        User user = userRepository.findUserByUsername(username);
+        User user = userRepository.findUserByUsernameIgnoreCase(username);
         if (matchPassword(user, oldPassword)) {
             user.setPassword(bCryptPasswordEncoder.encode(newPassword));
             userRepository.save(user);
@@ -105,7 +105,7 @@ public class UserService {
     }
 
     public boolean updateUsernameEmail(String username, String newUsername, String newEmail) {
-        User user = userRepository.findUserByUsername(username);
+        User user = userRepository.findUserByUsernameIgnoreCase(username);
         if (user == null) return false;
         user.setUsername(newUsername);
         user.setEmail(newEmail);
@@ -119,11 +119,11 @@ public class UserService {
     }
 
     public User getUserDetails(String username) {
-        return userRepository.findUserByUsername(username);
+        return userRepository.findUserByUsernameIgnoreCase(username);
     }
 
     public String getRole(String username) {
-        return userRepository.findUserByUsername(username).getRole();
+        return userRepository.findUserByUsernameIgnoreCase(username).getRole();
     }
 
     public List<DoctorUser> getDoctors() {

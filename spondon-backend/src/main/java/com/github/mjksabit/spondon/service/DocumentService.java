@@ -77,7 +77,7 @@ public class DocumentService {
             anonymousDataRepository.save(anonymousData);
 
         document.setOwner(patientUserRepository.findPatientUserByUserUsername(owner));
-        document.setUploader(userRepository.findUserByUsername(uploader));
+        document.setUploader(userRepository.findUserByUsernameIgnoreCase(uploader));
         document.setAccepted(owner.equalsIgnoreCase(uploader));
         documentRepository.save(document);
     }
@@ -113,12 +113,12 @@ public class DocumentService {
     public void createCollection(String username, String name) {
         DocumentCollection collection = new DocumentCollection();
         collection.setName(name);
-        collection.setOwner(userRepository.findUserByUsername(username));
+        collection.setOwner(userRepository.findUserByUsernameIgnoreCase(username));
         collectionRepository.save(collection);
     }
 
     public void setToCollection(String username, long id, long collectionId) throws Exception {
-        User user = userRepository.findUserByUsername(username);
+        User user = userRepository.findUserByUsernameIgnoreCase(username);
         if (user == null)
             throw new Exception("User not found");
 
@@ -168,7 +168,7 @@ public class DocumentService {
     }
 
     public Slice<?> getCollectionDocuments(String username, Long id, int page) {
-        User user = userRepository.findUserByUsername(username);
+        User user = userRepository.findUserByUsernameIgnoreCase(username);
 
         if (user.getRole().equals(AuthService.ROLE_DOCTOR))
             return doctorUserService.getCollectionDocuments(username, id, page);
@@ -182,7 +182,7 @@ public class DocumentService {
     @Transactional
     public void shareUserDocument(String owner, JSONArray listOfShare, long doctorUserId) throws Exception {
 
-        User sharer = userRepository.findUserByUsername(owner);
+        User sharer = userRepository.findUserByUsernameIgnoreCase(owner);
         if (sharer.getRole().equals(AuthService.ROLE_DOCTOR)) {
             doctorUserService.shareUserDocument(owner, listOfShare, doctorUserId);
             return;

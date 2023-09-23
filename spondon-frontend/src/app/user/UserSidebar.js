@@ -2,10 +2,22 @@ import React, { Component, useEffect, useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { Collapse } from "react-bootstrap";
 import { UserContext } from "../App";
+import { getProfile } from "../api/user";
 
 function UserSideBar(props) {
   const [state, setState] = useState({});
   const { user } = React.useContext(UserContext);
+
+  const [imageURL, setImageURL] = useState("");
+
+  useEffect(() => {
+    console.log("user: ", user);
+    if (user?.role === "ROLE_USER") {
+      getProfile().then((res) => {
+        setImageURL(res.imageURL);
+      });
+    }
+  }, [user?.username]);
 
   const toggleMenuState = (menuState) => {
     if (state[menuState]) {
@@ -70,7 +82,7 @@ function UserSideBar(props) {
             <div className="nav-profile-image">
               <img
                 src={
-                  user?.image || require("../../assets/images/faces/face1.jpg")
+                  imageURL || require("../../assets/images/faces/face1.jpg")
                 }
                 alt="profile"
               />
@@ -124,7 +136,7 @@ function UserSideBar(props) {
                   }
                   to="/user/assistance/symptom-checker"
                 >
-                  Symptom Checker - Free
+                  Symptom Checker
                 </Link>
               </li>
               {/* <li className="nav-item">
@@ -153,7 +165,7 @@ function UserSideBar(props) {
                   Report Analysis
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 {" "}
                 <Link
                   className={
@@ -165,7 +177,7 @@ function UserSideBar(props) {
                 >
                   Skin Care
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </Collapse>
         </li>

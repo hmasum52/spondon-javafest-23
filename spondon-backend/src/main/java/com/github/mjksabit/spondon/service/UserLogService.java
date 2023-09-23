@@ -24,7 +24,7 @@ public class UserLogService {
 
     public void notify(String username, String log) {
         UserLog userLog = new UserLog();
-        userLog.setUser(userRepository.findUserByUsername(username));
+        userLog.setUser(userRepository.findUserByUsernameIgnoreCase(username));
         userLog.setLog(log);
         userLog.setNotification(true);
         userLog.setTime(new Date());
@@ -42,7 +42,7 @@ public class UserLogService {
 
     public void log(String username, String log) {
         UserLog userLog = new UserLog();
-        userLog.setUser(userRepository.findUserByUsername(username));
+        userLog.setUser(userRepository.findUserByUsernameIgnoreCase(username));
         userLog.setLog(log);
         userLog.setNotification(false);
         userLog.setTime(new Date());

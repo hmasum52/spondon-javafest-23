@@ -5,8 +5,6 @@ import Spinner from "../app/shared/Spinner";
 import { useContext } from "react";
 import { UserContext } from "./App";
 
-const Dashboard = lazy(() => import("./dashboard/Dashboard"));
-
 const Login = lazy(() => import("./user-pages/Login"));
 const Register = lazy(() => import("./user-pages/Register"));
 const ForgetPassword = lazy(() => import("./user-pages/ForgetPassword"));
@@ -23,10 +21,12 @@ const Collections = lazy(() => import("./user/Collections"));
 const SharedByMe = lazy(() => import("./user/SharedByMe"));
 const UserSettings = lazy(() => import("./user/UserSettings"));
 const SymptomChecker = lazy(() => import("./user/SymptomChecker"));
+const PDFAnalyzer = lazy(() => import("./user/PDFAnalyzer"));
 const Logs = lazy(() => import("./common/Logs"));
 
 const AdminHome = lazy(() => import("./admin/Dashboard"));
 const AddDoctor = lazy(() => import("./admin/AddDoctor"));
+const Users = lazy(() => import("./admin/Users"));
 
 const DoctorHome = lazy(() => import("./doctor/Dashboard"));
 const SharedWithMe = lazy(() => import("./doctor/SharedWithMe"));
@@ -42,10 +42,11 @@ export default function AppRoutes() {
   return (
     <Suspense fallback={<Spinner />}>
       <Switch>
+        <Route path="/verify" component={Verify} />
+
         {user && (
           <Switch>
             <Route path="/security-settings" component={SecuritySettings} />
-            <Route path="/verify" component={Verify} />
 
             {user?.role === "ROLE_USER" && (
               <Switch>
@@ -64,6 +65,10 @@ export default function AppRoutes() {
                   path="/user/assistance/symptom-checker"
                   component={SymptomChecker}
                 />
+                <Route
+                  path="/user/assistance/anlysis"
+                  component={PDFAnalyzer}
+                />
                 <Route path="/user/logs" component={Logs} />
                 <Redirect to="/user/dashboard" />
               </Switch>
@@ -73,6 +78,7 @@ export default function AppRoutes() {
               <Switch>
                 <Route path="/admin/dashboard" component={AdminHome} />
                 <Route path="/admin/add-doctor" component={AddDoctor} />
+                <Route path="/admin/users" component={Users} />
                 <Redirect to="/admin/dashboard" />
               </Switch>
             )}

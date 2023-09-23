@@ -15,7 +15,7 @@ public class EmailService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
-    @Value("${FRONTEND_URL:https://blood-book.netlify.app}")
+    @Value("${FRONTEND_URL:https://localhost:3000}")
     String FRONTEND_URL;
 
     @Autowired
