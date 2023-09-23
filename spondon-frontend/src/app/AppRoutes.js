@@ -21,6 +21,7 @@ const Collections = lazy(() => import("./user/Collections"));
 const SharedByMe = lazy(() => import("./user/SharedByMe"));
 const UserSettings = lazy(() => import("./user/UserSettings"));
 const SymptomChecker = lazy(() => import("./user/SymptomChecker"));
+const PDFAnalyzer = lazy(() => import("./user/PDFAnalyzer"));
 const Logs = lazy(() => import("./common/Logs"));
 
 const AdminHome = lazy(() => import("./admin/Dashboard"));
@@ -63,6 +64,10 @@ export default function AppRoutes() {
                 <Route
                   path="/user/assistance/symptom-checker"
                   component={SymptomChecker}
+                />
+                <Route
+                  path="/user/assistance/anlysis"
+                  component={PDFAnalyzer}
                 />
                 <Route path="/user/logs" component={Logs} />
                 <Redirect to="/user/dashboard" />
