@@ -263,7 +263,7 @@ function App() {
                   />
                 </div>
                 <div className="form-group col-md-12">
-                  <p className="text-muted">Start Date (Including)</p>
+                  <p className="text-muted">Start Date</p>
                   <input
                     type="date"
                     className="form-control form-control-lg"
@@ -272,7 +272,7 @@ function App() {
                   />
                 </div>
                 <div className="form-group col-md-12">
-                  <p className="text-muted">End Date (Excluding)</p>
+                  <p className="text-muted">End Date</p>
                   <input
                     type="date"
                     className="form-control form-control-lg"
@@ -301,7 +301,7 @@ function App() {
                         keywords: keywords.split(",").map((k) => k.trim()),
                         accuracy: Number.parseFloat(accuracy),
                         from: new Date(startDate).getTime(),
-                        to: new Date(endDate).getTime(),
+                        to: new Date(endDate).getTime() + 24 * 60 * 60 * 1000,
                         latMax: ne.lat(),
                         latMin: sw.lat(),
                         lngMax: ne.lng(),
