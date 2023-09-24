@@ -33,3 +33,4 @@ build/
 .vscode/
 ./glove.6B.100d.txt
 **/glove.6B.100d.txt
+.env

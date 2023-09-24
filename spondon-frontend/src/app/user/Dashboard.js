@@ -110,14 +110,13 @@ function UserProfile() {
                   />
                   <img
                     src={profile.imageURL}
-                    className="rounded-circle mb-3 mr-3"
+                    className="rounded-circle mb-3 mr-3 center-cropped"
                     style={{
                       maxHeight: "8rem",
                       maxWidth: "8rem",
                       position: "absolute",
                       bottom: "0",
                       right: "0",
-                      zIndex: "999",
                     }}
                     alt="circle"
                   />
