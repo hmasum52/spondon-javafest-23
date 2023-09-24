@@ -90,8 +90,7 @@ export default function Activate() {
                     <img
                       src={imageURL}
                       alt="Profile"
-                      className="rounded-circle mr-2"
-                      style={{ maxHeight: "4rem", maxWidth: "20%" }}
+                      className="rounded-circle mr-2 center-cropped"
                     />
                   )}
                   <FileUploader

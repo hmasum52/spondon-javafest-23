@@ -204,3 +204,10 @@ option {
     height: 100%;
   }
 }
+
+.center-cropped {
+  object-fit: cover; 
+  object-position: center;
+  height: 6rem;
+  width: 6rem;
+}

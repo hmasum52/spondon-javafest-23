@@ -166,8 +166,8 @@ export default function Collections() {
           </ListGroup>
         </div>
         {id && (
-          <div className="col-md-9">
-            <div className="col-md-12 grid-margin stretch-card">
+          <div className="col-md-9 mx-0">
+            <div className="w-100 grid-margin stretch-card">
               <div className="card">
                 <div className="card-body">
                   <div className="d-flex">
