@@ -6,7 +6,7 @@ on:
 env:
   ASC_PACKAGE_PATH: ${{ github.workspace }}
   JAVA_VERSION: 11
-  AZURE_SUBSCRIPTION: 9e64bea3-54ba-4c03-bc0d-cac161243ff7
+  AZURE_SUBSCRIPTION: 7e865bcf-34fe-4c5b-806a-01d2caf5144b
 
 jobs:
   deploy_to_production:
@@ -38,7 +38,7 @@ jobs:
         with:
           azure-subscription: ${{ env.AZURE_SUBSCRIPTION }}
           action: Deploy
-          service-name: spondon-backend
-          app-name: therap-javafest-deployment
+          service-name: spondon
+          app-name: backend
           use-staging-deployment: false
           package: ${{ env.ASC_PACKAGE_PATH }}/**/*.jar
