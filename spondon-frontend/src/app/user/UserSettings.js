@@ -111,8 +111,7 @@ export default function UserSettings() {
                     {imageURL && (
                       <img
                         src={imageURL}
-                        className="rounded-circle mr-2"
-                        style={{ maxHeight: "4rem", maxWidth: "4rem" }}
+                        className="rounded-circle mr-2 center-cropped"
                         alt="Profile"
                       />
                     )}
