@@ -58,7 +58,7 @@ public class CommonUserController {
             if (role.equals(AuthService.ROLE_USER) && !owner.equalsIgnoreCase(username)) {
                 return ResponseEntity.badRequest().build();
             } else {
-                documentService.saveDocument(req, username, owner);
+                documentService.saveDocument(req, owner, username);
                 return ResponseEntity.ok().build();
             }
         } catch (Exception e) {

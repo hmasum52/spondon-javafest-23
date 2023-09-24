@@ -214,18 +214,20 @@ function App() {
                           setSelected(d);
                         }}
                       >
-                        {selected && selected.id === d.id && (
-                          <InfoWindow
-                            onCloseClick={() => {
-                              setSelected(null);
-                            }}
-                          >
-                            <div>
-                              <h2>{dateFromTimestamp(d.time)}</h2>
-                              <p>{d.data}</p>
-                            </div>
-                          </InfoWindow>
-                        )}
+                        {selected &&
+                          selected.latitude === d.latitude &&
+                          selected.longitude === d.longitude && (
+                            <InfoWindow
+                              onCloseClick={() => {
+                                setSelected(null);
+                              }}
+                            >
+                              <div>
+                                <h2>{dateFromTimestamp(d.time)}</h2>
+                                <p>{d.data}</p>
+                              </div>
+                            </InfoWindow>
+                          )}
                       </Marker>
                     ))}
                   </GoogleMap>
