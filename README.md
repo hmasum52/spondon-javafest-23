@@ -2,7 +2,7 @@
 
 > Medical document store, verify and sharing platform with end-to-end encryption
 
-[Youtube Presentaion](https://youtu.be/amAdNqmjz_s) 
+[Youtube Presentaion](https://youtu.be/XDA4e3avoiA)
 
 ## Project Overview
 
@@ -10,17 +10,17 @@
 
 - __Verify__ a documents’ __authenticity and identify__ prescription/medical record __tempering__
 
-- Identify **patient negligence / doctor mistreatment** with share history
+- Identify __patient negligence / doctor mistreatment__ with share history
 
-- **Doctor-Patient Confidentiality**, Patient has **full control** over his data
+- __Doctor-Patient Confidentiality__, Patient has __full control__ over his data
 
-- **Faster** Medical document (eg. fitness certificate) **verification process**
+- __Faster__ Medical document (eg. fitness certificate) **verification process**
 
-- **Emergency** medical information
+- __Emergency__ medical information
 
-- **Organize** medical documents in **collection**, easily **share a group of documents**
+- __Organize__ medical documents in __collection__, easily **share a group of documents**
 
-- **Public health analysis** for Directorate General of Health Services (DGHS)
+- __Public health analysis__ for Directorate General of Health Services (DGHS)
 
 ## Tech Stack
 
@@ -68,7 +68,7 @@
 
 ### Frontend
 
-**Deplyment:** [Netlify](https://sp0nd0n.netlify.app/) 
+**Deplyment:** [Netlify](https://sp0nd0n.netlify.app/)
 
 **CI/CD:** Trigger on `deply-frontend` branch
 
@@ -79,12 +79,12 @@
 ### Backend
 
 > Backend was deplyed without NLP because the `deeplearning4j` and `Stanford Core NLP` take too much resources. Tokenization in the deployed version is done using regular expression and `Word2Vec` function similarity is rewritten by us in java.
-> 
+>
 > This version of code is in `without-ai` branch
 
 **Deplyment:** [Azure](https://spondon-backend-7.azuremicroservices.io)
 
-**Docker Image**: [URL]([Docker](https://hub.docker.com/repository/docker/mjksabit/spondon-backend) `docker push mjksabit/spondon-backend:without-nlp` 
+**Docker Image**: [URL]([Docker](https://hub.docker.com/repository/docker/mjksabit/spondon-backend) `docker push mjksabit/spondon-backend:without-nlp`
 
 **CI/CD**: Trigger on `without-ai` branch
 
@@ -104,11 +104,11 @@ Three Tier Archirecture: Presentation Tier, Logic Tier, Data Tier
 
 ## External API
 
-- **ImageBB**: To upload image
+- __ImageBB__: To upload image
 
-- **Endless Medical**: AI integrated symptom analyzer
+- __Endless Medical__: AI integrated symptom analyzer
 
-- **ChatPDF**: Analyze pdf files and ask questions
+- __ChatPDF__: Analyze pdf files and ask questions
 
 ## Entity Relationship Diagram
 
@@ -116,21 +116,21 @@ Three Tier Archirecture: Presentation Tier, Logic Tier, Data Tier
 
 ## End-to-end Encryption
 
-- User have **RSA public-private key pair**, public key is  stored in the database
+- User have __RSA public-private key pair__, public key is  stored in the database
 
-- When a document is uploaded, a **random password** is generated, which is used for **AES encryption** of the document
+- When a document is uploaded, a __random password__ is generated, which is used for __AES encryption__ of the document
 
-- The **generated key encrypted with user public key** stored in the database for accessing the document later
+- The __generated key encrypted with user public key__ stored in the database for accessing the document later
 
 - All these are done at frontend
 
 ## AI tools used
 
-- **Endless Medical**: AI integrated symptom analyzer [[link](https://endlessmedical.com/)]
+- __Endless Medical__: AI integrated symptom analyzer [[link](https://endlessmedical.com/)]
 
-- **ChatPDF**: Analyze pdf files and ask questions [[link](https://www.chatpdf.com/)]
+- __ChatPDF__: Analyze pdf files and ask questions [[link](https://www.chatpdf.com/)]
 
-- **Analysis**: **Stanford CoreNLP** with **deeplearing4j** for *tokenizing*, sentence splitting, sentiment etc analysis of anonymous data using **word2vec** pretrained model
+- __Analysis__: __Stanford CoreNLP__ with __deeplearing4j__ for *tokenizing*, sentence splitting, sentiment etc analysis of anonymous data using __word2vec__ pretrained model
 
 ## Project Structure
 
