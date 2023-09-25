@@ -254,7 +254,7 @@ function UserSideBar(props) {
             isPathActive("/doctor/logs") ? "nav-item active" : "nav-item"
           }
         >
-          <Link className="nav-link" to="/user/logs">
+          <Link className="nav-link" to="/doctor/logs">
             <span className="menu-title">Logs</span>
             <i className="mdi mdi-text-long menu-icon"></i>
           </Link>
