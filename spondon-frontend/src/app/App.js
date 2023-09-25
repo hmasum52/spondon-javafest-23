@@ -1,19 +1,15 @@
 import axios from "axios";
 import { useEffect, useState, createContext } from "react";
-import { withRouter } from "react-router-dom";
 import "./App.scss";
 import AppRoutes from "./AppRoutes";
 import Navbar from "./shared/Navbar";
 import Footer from "./shared/Footer";
-import "./App.css";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import { BASE_URL, FORBIDDEN, UNAUTHORIZED } from "./api";
-import { Toaster, toast } from "react-hot-toast";
-import { isCursorAtEnd } from "@testing-library/user-event/dist/utils";
+import { toast } from "react-hot-toast";
 import UserSidebar from "./user/UserSidebar";
 import AdminSidebar from "./admin/AdminSidebar";
 import DoctorSidebar from "./doctor/DoctorSidebar";
-import { getProfile } from "./api/user";
 
 export const UserContext = createContext({
   user: undefined,
