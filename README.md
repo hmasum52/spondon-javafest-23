@@ -72,9 +72,9 @@
 
 **CI/CD:** Trigger on `deply-frontend` branch
 
-![](images\2023-09-25-23-30-17-image.png)
+![](./images/2023-09-25-23-30-17-image.png)
 
-![](images\2023-09-25-23-28-44-image.png)
+![](./images/2023-09-25-23-28-44-image.png)
 
 ### Backend
 
@@ -88,9 +88,9 @@
 
 **CI/CD**: Trigger on `without-ai` branch
 
-![](images\2023-09-25-23-36-40-image.png)
+![](./images/2023-09-25-23-36-40-image.png)
 
-![](images\2023-09-25-23-37-44-image.png)
+![](./images/2023-09-25-23-37-44-image.png)
 
 ### Database
 
@@ -100,7 +100,7 @@
 
 Three Tier Archirecture: Presentation Tier, Logic Tier, Data Tier
 
-![](images\2023-09-25-23-41-00-image.png)
+![](./images/2023-09-25-23-41-00-image.png)
 
 ## External API
 
@@ -112,7 +112,7 @@ Three Tier Archirecture: Presentation Tier, Logic Tier, Data Tier
 
 ## Entity Relationship Diagram
 
-![](images\2023-09-25-23-43-32-image.png)
+![](./images/2023-09-25-23-43-32-image.png)
 
 ## End-to-end Encryption
 
