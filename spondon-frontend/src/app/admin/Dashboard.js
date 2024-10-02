@@ -43,7 +43,7 @@ function ConvertToCSV(json) {
 function App() {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyCuEdbWpHFcHr-UcJ4etrd7hwdrnyJiuk4",
+    googleMapsApiKey: "GOOGLE_MAP_API_KEY",
   });
 
   const [map, setMap] = React.useState(null);
